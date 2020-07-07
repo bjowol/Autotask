@@ -164,31 +164,9 @@ Function Connect-AtwsWebAPI {
             return
         }
 
-        # Question 1: Is the current module in $env:PSModulePath
-        $notInPath = $true
-        $separator = if ($IsMacOS -or $IsLinux) { ':' } else { ';' }
-        foreach ($dir in $env:PSModulePath -split $separator) { # Separator can be both ; and : depending on platform
-            if ($My.ModuleBase -like "$dir*") {
-                $notInPath = $false
-            }
-        }
-  
-        if ($notInPath) { 
-            # Import the module from its base directory
-            $moduleName = $My.ModuleBase
-        }
-        else {
-            # Import by module name
-            $moduleName = $MyInvocation.MyCommand.ModuleName
-        }
-      
-        # Reload the module with configuration 
-        Try { 
-            Import-Module -Name $moduleName @importParams -ArgumentList $ConfigurationData
-        }
-        catch { 
-            Write-Host ('ERROR: {0}' -f $_.Exception.Message) -ForegroundColor Red
-        }
+        ## Connect to the API
+        #  or die trying
+        . Connect-AtwsWebServices -Configuration $Configuration -Erroraction Stop
         
     }
   

@@ -98,15 +98,48 @@ foreach ($import in @($privateFunction + $publicFunction)) {
     }
 }
 
+Write-Verbose ('{0}: Importing {1} Static and {2} Dynamic functions.' -F $MyInvocation.MyCommand.Name, $staticFunction.Count, $dynamicFunction.Count)
+
+# Loop through all script files and source them
+foreach ($import in @($staticFunction + $dynamicFunction)) {
+    Write-Debug ('{0}: Importing {1}' -F $MyInvocation.MyCommand.Name, $import)
+
+    try {
+        . $import.fullname
+    }
+    catch {
+        throw "Could not import function $($import.fullname): $_"
+    }
+}
+
+# Explicitly export public functions
+Write-Verbose ('{0}: Exporting {1} Public functions.' -F $MyInvocation.MyCommand.Name, $publicFunction.Count) 
+Export-ModuleMember -Function $publicFunction.Basename
+
+# Set to $true for explicit export of private functions. For debugging purposes only
+if ($true){
+    # Explicitly export private functions
+    Write-Verbose ('{0}: Exporting {1} Private functions.' -F $MyInvocation.MyCommand.Name, $privateFunction.Count) 
+    Export-ModuleMember -Function $privateFunction.Basename
+}
+
+# Explicitly export static functions
+Write-Verbose ('{0}: Exporting {1} Static functions.' -F $MyInvocation.MyCommand.Name, $staticFunction.Count)
+Export-ModuleMember -Function $staticFunction.Basename
+
+# Explicitly export dynamic functions
+Write-Verbose ('{0}: Exporting {1} Dynamic functions.' -F $MyInvocation.MyCommand.Name, $dynamicFunction.Count)
+Export-ModuleMember -Function $dynamicFunction.Basename
+
+# Backwards compatibility since we are now trying to use consistent naming
+Set-Alias -Scope Global -Name 'Connect-AutotaskWebAPI' -Value 'Connect-AtwsWebAPI'
+
 # If they tried to pass any variables
 if ($Credential) {
     Write-Verbose ('{0}: Parameters detected. Connecting to Autotask API' -F $MyInvocation.MyCommand.Name)
 
-    # Notify Get-AtwsFieldInfo that we are currently loading the module
-    $Script:LoadingModule = $true
-
     Try { 
-                if ($Credential -is [pscredential]) {
+        if ($Credential -is [pscredential]) {
             ## Legacy
             #  The user passed credentials directly
             $Parameters = @{
@@ -145,45 +178,6 @@ if ($Credential) {
 else {
     Write-Verbose 'No Credentials were passed with -ArgumentList. Loading module without any connection to Autotask Web Services. Use Connect-AtwsWebAPI to connect.'
 }
-
-Write-Verbose ('{0}: Importing {1} Static and {2} Dynamic functions.' -F $MyInvocation.MyCommand.Name, $staticFunction.Count, $dynamicFunction.Count)
-
-# Loop through all script files and source them
-foreach ($import in @($staticFunction + $dynamicFunction)) {
-    Write-Debug ('{0}: Importing {1}' -F $MyInvocation.MyCommand.Name, $import)
-
-    try {
-        . $import.fullname
-    }
-    catch {
-        throw "Could not import function $($import.fullname): $_"
-    }
-}
-
-# Explicitly export public functions
-Write-Verbose ('{0}: Exporting {1} Public functions.' -F $MyInvocation.MyCommand.Name, $publicFunction.Count) 
-Export-ModuleMember -Function $publicFunction.Basename
-
-# Set to $true for explicit export of private functions. For debugging purposes only
-if ($true){
-    # Explicitly export private functions
-    Write-Verbose ('{0}: Exporting {1} Private functions.' -F $MyInvocation.MyCommand.Name, $privateFunction.Count) 
-    Export-ModuleMember -Function $privateFunction.Basename
-}
-
-# Explicitly export static functions
-Write-Verbose ('{0}: Exporting {1} Static functions.' -F $MyInvocation.MyCommand.Name, $staticFunction.Count)
-Export-ModuleMember -Function $staticFunction.Basename
-
-# Explicitly export dynamic functions
-Write-Verbose ('{0}: Exporting {1} Dynamic functions.' -F $MyInvocation.MyCommand.Name, $dynamicFunction.Count)
-Export-ModuleMember -Function $dynamicFunction.Basename
-
-# Backwards compatibility since we are now trying to use consistent naming
-Set-Alias -Scope Global -Name 'Connect-AutotaskWebAPI' -Value 'Connect-AtwsWebAPI'
-
-# Done loading
-$Script:LoadingModule = $false
 
 # Restore Previous preference
 if ($oldVerbosePreference -ne $VerbosePreference) {
