@@ -39,15 +39,15 @@ Function Update-AtwsRamCache {
         }
     
         # Has cache been loaded?
-        if ($Script:Atws.Cache.Count -eq 0) {
+        if ($Script:FieldInfoCache.Count -eq 0) {
             # Load it.
             Initialize-AtwsRamCache
         }
         # Load current API version from API
         $CurrentApiVersion = $Script:Atws.GetWsdlVersion($Script:Atws.IntegrationsValue)
         $CurrentModuleVersion = $My.ModuleVersion
-        $CacheApiVersion = $Script:Atws.Cache[$Script:Atws.CI].ApiVersion.Tostring()
-        $CacheModuleVersion = $Script:Atws.Cache[$Script:Atws.CI].ModuleVersion.Tostring()
+        $CacheApiVersion = $Script:WebServiceCache.ApiVersion.Tostring()
+        $CacheModuleVersion = $Script:WebServiceCache.ModuleVersion.Tostring()
     }
 
     Process { 
@@ -67,6 +67,7 @@ Function Update-AtwsRamCache {
         if ($PSCmdlet.ShouldProcess($verboseDescription, $verboseWarning, $caption)) { 
                  
             $script:FieldInfoCache = @{ }
+            $Base = @{}
 
             foreach ($object in $Entities) { 
     
@@ -106,6 +107,7 @@ Function Update-AtwsRamCache {
                 Add-Member -InputObject $CacheEntry -MemberType NoteProperty -Name FieldInfo -Value $fieldInfo -Force
             
                 $Script:FieldInfoCache[$object.Name] = $CacheEntry
+                $Base[$object.Name] = $CacheEntry
 
             }
             if ($CurrentOperation) { 
@@ -113,21 +115,18 @@ Function Update-AtwsRamCache {
             }
         
             # Add cache to $Cache object and save to disk
-            $Script:Atws.Cache[$Script:Atws.CI] = New-Object -TypeName PSObject -Property @{
+            $Script:WebServiceCache = New-Object -TypeName PSObject -Property @{
                 ApiVersion    = $CurrentApiVersion
                 ModuleVersion = [Version]$My.ModuleVersion
             }
             # Use Add-member to store complete object, not its typename
-            Add-Member -InputObject $Script:Atws.Cache[$Script:Atws.CI] -MemberType NoteProperty -Name FieldInfoCache -Value $fieldInfoCache 
+            Add-Member -InputObject $Script:WebServiceCache -MemberType NoteProperty -Name FieldInfoCache -Value $fieldInfoCache 
     
-            # Add new base reference
-            $Script:Atws.Cache['00'] = New-Object -TypeName PSObject -Property @{
+            # Create new base reference
+            $BaseEntityInfo = New-Object -TypeName PSObject -Property @{
                 ApiVersion    = $CurrentApiVersion
                 ModuleVersion = [Version]$My.ModuleVersion
             }
-    
-            # Clone current fieldinfo cache to new object
-            $Base = Copy-PSObject -InputObject $fieldInfoCache
         
             # Clean Instance specific info from Base
             foreach ($object in $Base.GetEnumerator().Where( { $_.Value.HasPickList -or $_.Value.EntityInfo.HasUserDefinedFields })) {
@@ -141,10 +140,21 @@ Function Update-AtwsRamCache {
             }
         
             # Use Add-member to store complete object, not its typename
-            Add-Member -InputObject $Script:Atws.Cache['00'] -MemberType NoteProperty -Name FieldInfoCache -Value $Base 
+            Add-Member -InputObject $BaseEntityInfo -MemberType NoteProperty -Name FieldInfoCache -Value $Base 
         }
     }
   
     End { 
+        $caption = $MyInvocation.MyCommand.Name
+        $verboseDescription = '{0}: Overwriting existing module info cache with updated data.' -F $caption
+        $verboseWarning = '{0}: About to overwrite existing module info cache with updated data. This cannot be undone. Do you want to continue?' -F $caption
+          
+        if ($PSCmdlet.ShouldProcess($verboseDescription, $verboseWarning, $caption)) { 
+            # Save updated base info for connection to new tenants.      
+            $BaseEntityInfoPath = '{0}\Private\AutotaskFieldInfoCache.xml' -F $MyInvocation.MyCommand.Module.ModuleBase
+            $BaseEntityInfo | Export-Clixml -Path $BaseEntityInfoPath -Force
+    
+            Write-Verbose -Message ('{0}: Updated central module fieldinfocache.' -F $MyInvocation.MyCommand.Name)
+        }
     }
 }
