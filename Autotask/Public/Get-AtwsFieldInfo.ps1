@@ -99,14 +99,8 @@ Function Get-AtwsFieldInfo {
     
         Write-Debug ('{0}: Begin of function' -F $MyInvocation.MyCommand.Name)
         
-        # Check if we are connected before trying anything
-        if (-not($Script:Atws)) {
-            throw [ApplicationException] 'Not connected to Autotask WebAPI. Connect with Connect-AtwsWebAPI. For help use "get-help Connect-AtwsWebAPI".'
-            return
-        }
-        
         # Has cache been loaded?
-        if (-not($Script:Atws.Cache.Count -gt 0)) {
+        if (-not($Script:FieldInfoCache)) {
             # Load it.
             Initialize-AtwsRamCache
         }
@@ -128,6 +122,11 @@ Function Get-AtwsFieldInfo {
             begin {
                 Write-Verbose ('{0}: Begin of function' -F $MyInvocation.MyCommand.Name)
 
+                # Check if we are connected before trying anything
+                if (-not($Script:Atws)) {
+                    throw [ApplicationException] 'Not connected to Autotask WebAPI. Connect with Connect-AtwsWebAPI. For help use "get-help Connect-AtwsWebAPI".'
+                    return
+                }
             }
 
             process {

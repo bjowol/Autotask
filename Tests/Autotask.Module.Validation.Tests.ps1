@@ -96,7 +96,7 @@ describe "$ModuleName Module function tests" -Tag 'Functions' {
     
     $subdir = '{0}\{1}' -F $modulePath, $directory 
 
-    $functions = (Get-ChildItem -Path $subdir\*.ps1 -Exclude *-AtwsDefinition.ps1).BaseName
+    $functions = (Get-ChildItem -Path $subdir\*.ps1 -Exclude *-AtwsDynamicDefinition.ps1).BaseName
 
     foreach ($function in $functions) {
   
