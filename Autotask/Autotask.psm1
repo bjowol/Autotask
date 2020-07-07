@@ -79,31 +79,16 @@ Write-Debug ('{0}: Found {1} script files in {2}\Public' -F $MyInvocation.MyComm
 $staticFunction = @( Get-ChildItem -Path $PSScriptRoot\Static\*.ps1 -ErrorAction SilentlyContinue ) 
 Write-Debug ('{0}: Found {1} script files in {2}\Static' -F $MyInvocation.MyCommand.Name, $staticFunction.Count, $PSScriptRoot)
 
-# Static functions will be exported with Prefix prepended to the Noun of the function name
+# Dynamic functions will be exported with Prefix prepended to the Noun of the function name
 
 $dynamicFunction = @( Get-ChildItem -Path $PSScriptRoot\Dynamic\*.ps1 -ErrorAction SilentlyContinue ) 
 Write-Debug ('{0}: Found {1} script files in {2}\Dynamic' -F $MyInvocation.MyCommand.Name, $dynamicFunction.Count, $PSScriptRoot)
 
-
 Write-Verbose ('{0}: Importing {1} Private and {2} Public functions.' -F $MyInvocation.MyCommand.Name, $privateFunction.Count, $publicFunction.Count)
 
 # Loop through all supporting script files and source them
-foreach ($import in @($privateFunction + $publicFunction)) {
+foreach ($import in @($privateFunction + $publicFunction + $staticFunction + $dynamicFunction)) {
     Write-Debug ('{0}: Importing {1}' -F $MyInvocation.MyCommand.Name, $import)
-    try {
-        . $import.fullname
-    }
-    catch {
-        throw "Could not import function $($import.fullname): $_"
-    }
-}
-
-Write-Verbose ('{0}: Importing {1} Static and {2} Dynamic functions.' -F $MyInvocation.MyCommand.Name, $staticFunction.Count, $dynamicFunction.Count)
-
-# Loop through all script files and source them
-foreach ($import in @($staticFunction + $dynamicFunction)) {
-    Write-Debug ('{0}: Importing {1}' -F $MyInvocation.MyCommand.Name, $import)
-
     try {
         . $import.fullname
     }
@@ -116,6 +101,14 @@ foreach ($import in @($staticFunction + $dynamicFunction)) {
 Write-Verbose ('{0}: Exporting {1} Public functions.' -F $MyInvocation.MyCommand.Name, $publicFunction.Count) 
 Export-ModuleMember -Function $publicFunction.Basename
 
+# Explicitly export static functions
+Write-Verbose ('{0}: Exporting {1} Public functions.' -F $MyInvocation.MyCommand.Name, $publicFunction.Count) 
+Export-ModuleMember -Function $staticFunction.Basename
+
+# Explicitly export dynamic functions
+Write-Verbose ('{0}: Exporting {1} Public functions.' -F $MyInvocation.MyCommand.Name, $publicFunction.Count) 
+Export-ModuleMember -Function $dynamicFunction.Basename
+
 # Set to $true for explicit export of private functions. For debugging purposes only
 if ($true){
     # Explicitly export private functions
@@ -123,16 +116,47 @@ if ($true){
     Export-ModuleMember -Function $privateFunction.Basename
 }
 
-# Explicitly export static functions
-Write-Verbose ('{0}: Exporting {1} Static functions.' -F $MyInvocation.MyCommand.Name, $staticFunction.Count)
-Export-ModuleMember -Function $staticFunction.Basename
-
-# Explicitly export dynamic functions
-Write-Verbose ('{0}: Exporting {1} Dynamic functions.' -F $MyInvocation.MyCommand.Name, $dynamicFunction.Count)
-Export-ModuleMember -Function $dynamicFunction.Basename
-
 # Backwards compatibility since we are now trying to use consistent naming
 Set-Alias -Scope Global -Name 'Connect-AutotaskWebAPI' -Value 'Connect-AtwsWebAPI'
+
+# Import service reference and bindings
+# Load support for TLS 1.2 if the Service Point Manager haven't loaded it yet
+# This is now a REQUIREMENT to talk to the API endpoints
+$Protocol = [System.Net.ServicePointManager]::SecurityProtocol
+if ($Protocol.Tostring() -notlike '*Tls12*') { 
+    [System.Net.ServicePointManager]::SecurityProtocol += 'tls12'
+}
+
+# Path to web service reference
+$code = '{0}\Private\Reference.cs' -f $My['ModuleBase']
+
+# List of needed assemblies for Powershell 5.1
+$assemblies = @(
+    'System.ServiceModel'
+    'System.ServiceModel.Duplex' 
+    'System.ServiceModel.Http'
+    'System.ServiceModel.NetTcp'
+    'System.ServiceModel.Security'
+    'System.Diagnostics.Debug'
+    'System.Xml'
+    'System.Xml.ReaderWriter'
+    'System.Runtime.Serialization'
+)
+# For Powershell versions 6 and higher, add these assemblies
+if ($PSVersionTable.PSVersion.Major -ge 6) { 
+    $assemblies += @( 
+        'netstandard'
+        'System.Xml.XmlSerializer'
+        'System.Runtime.Serialization.Xml'
+        'System.ServiceModel.Primitives'
+        'System.Private.ServiceModel'
+        'System.Diagnostics.Tools'
+    )
+}
+
+# Compile webserviceinfo (Reference.cs) and instantiate a SOAP client
+Add-Type -TypeDefinition (Get-Content -raw $code) -ReferencedAssemblies $assemblies
+
 
 # If they tried to pass any variables
 if ($Credential) {
@@ -177,6 +201,16 @@ if ($Credential) {
 }
 else {
     Write-Verbose 'No Credentials were passed with -ArgumentList. Loading module without any connection to Autotask Web Services. Use Connect-AtwsWebAPI to connect.'
+}
+
+# Clean out old cache data
+# On Windows we store the cache in the WindowsPowerhell folder in My documents
+# On macOS and Linux we use a dot-folder in the users $HOME folder as is customary
+if ([Runtime.InteropServices.RuntimeInformation]::IsOSPlatform([Runtime.InteropServices.OSPlatform]::Windows)) {  
+    $PersonalCacheDir = Join-Path $([environment]::GetFolderPath('MyDocuments')) 'WindowsPowershell\Cache' 
+}
+else {
+    $PersonalCacheDir = Join-Path $([environment]::GetFolderPath('MyDocuments')) '.config\powershell\atwsCache' 
 }
 
 # Restore Previous preference
