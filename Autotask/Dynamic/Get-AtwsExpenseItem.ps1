@@ -90,14 +90,312 @@ Set-AtwsExpenseItem
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='Filter', ConfirmImpact='None')]
-  Param()
+  Param
+  (
+# A filter that limits the number of objects that is returned from the API
+    [Parameter(
+      Mandatory = $true,
+      ValueFromRemainingArguments = $true,
+      ParametersetName = 'Filter'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [string[]]
+    $Filter,
 
-    dynamicParam {
-      $entityName = 'ExpenseItem'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'Get' -Entity $entity -FieldInfo $fieldInfo
-    }  
+# Follow this external ID and return any external objects
+    [Parameter(
+      ParametersetName = 'Filter'
+    )]
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Alias('GetRef')]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet('AccountID', 'ExpenseCurrencyID', 'ExpenseReportID', 'ProjectID', 'TaskID', 'TicketID')]
+    [string]
+    $GetReferenceEntityById,
+
+# Return entities of selected type that are referencing to this entity.
+    [Parameter(
+      ParametersetName = 'Filter'
+    )]
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Alias('External')]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet('BillingItem:ExpenseItemID')]
+    [string]
+    $GetExternalEntityByThisEntityId,
+
+# Return all objects in one query
+    [Parameter(
+      ParametersetName = 'Get_all'
+    )]
+    [switch]
+    $All,
+
+# Expense Item ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[long][]]
+    $id,
+
+# Expense Report ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[Int][]]
+    $ExpenseReportID,
+
+# Description
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [ValidateLength(0,128)]
+    [string[]]
+    $Description,
+
+# Expense Date
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[datetime][]]
+    $ExpenseDate,
+
+# Expense Amount
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[double][]]
+    $ExpenseAmount,
+
+# Have Receipt
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[boolean][]]
+    $HaveReceipt,
+
+# Billable To Account
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[boolean][]]
+    $BillableToAccount,
+
+# Account ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[Int][]]
+    $AccountID,
+
+# Project ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[Int][]]
+    $ProjectID,
+
+# Task ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[Int][]]
+    $TaskID,
+
+# Ticket ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[Int][]]
+    $TicketID,
+
+# Entertainment Location
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,128)]
+    [string[]]
+    $EntertainmentLocation,
+
+# Miles
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[double][]]
+    $Miles,
+
+# Origin
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,128)]
+    [string[]]
+    $Origin,
+
+# Destination
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,128)]
+    [string[]]
+    $Destination,
+
+# purchase_order_number
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,50)]
+    [string[]]
+    $PurchaseOrderNumber,
+
+# Odometer Start
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[double][]]
+    $OdometerStart,
+
+# Odometer End
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[double][]]
+    $OdometerEnd,
+
+# Currency ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[Int][]]
+    $ExpenseCurrencyID,
+
+# Receipt Amount
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[double][]]
+    $ReceiptAmount,
+
+# Reimbursement Amount
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[double][]]
+    $ReimbursementAmount,
+
+# Reimbursement Currency Reimbursement Amount
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[double][]]
+    $ReimbursementCurrencyReimbursementAmount,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'ExpenseReportID', 'Description', 'ExpenseDate', 'ExpenseAmount', 'HaveReceipt', 'BillableToAccount', 'AccountID', 'ProjectID', 'TaskID', 'TicketID', 'EntertainmentLocation', 'Miles', 'Origin', 'Destination', 'PurchaseOrderNumber', 'OdometerStart', 'OdometerEnd', 'ExpenseCurrencyID', 'ReceiptAmount', 'ReimbursementAmount', 'ReimbursementCurrencyReimbursementAmount')]
+    [string[]]
+    $NotEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'ExpenseReportID', 'Description', 'ExpenseDate', 'ExpenseAmount', 'HaveReceipt', 'BillableToAccount', 'AccountID', 'ProjectID', 'TaskID', 'TicketID', 'EntertainmentLocation', 'Miles', 'Origin', 'Destination', 'PurchaseOrderNumber', 'OdometerStart', 'OdometerEnd', 'ExpenseCurrencyID', 'ReceiptAmount', 'ReimbursementAmount', 'ReimbursementCurrencyReimbursementAmount')]
+    [string[]]
+    $IsNull,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'ExpenseReportID', 'Description', 'ExpenseDate', 'ExpenseAmount', 'HaveReceipt', 'BillableToAccount', 'AccountID', 'ProjectID', 'TaskID', 'TicketID', 'EntertainmentLocation', 'Miles', 'Origin', 'Destination', 'PurchaseOrderNumber', 'OdometerStart', 'OdometerEnd', 'ExpenseCurrencyID', 'ReceiptAmount', 'ReimbursementAmount', 'ReimbursementCurrencyReimbursementAmount')]
+    [string[]]
+    $IsNotNull,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'ExpenseReportID', 'Description', 'ExpenseDate', 'ExpenseAmount', 'AccountID', 'ProjectID', 'TaskID', 'TicketID', 'EntertainmentLocation', 'Miles', 'Origin', 'Destination', 'PurchaseOrderNumber', 'OdometerStart', 'OdometerEnd', 'ExpenseCurrencyID', 'ReceiptAmount', 'ReimbursementAmount', 'ReimbursementCurrencyReimbursementAmount')]
+    [string[]]
+    $GreaterThan,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'ExpenseReportID', 'Description', 'ExpenseDate', 'ExpenseAmount', 'AccountID', 'ProjectID', 'TaskID', 'TicketID', 'EntertainmentLocation', 'Miles', 'Origin', 'Destination', 'PurchaseOrderNumber', 'OdometerStart', 'OdometerEnd', 'ExpenseCurrencyID', 'ReceiptAmount', 'ReimbursementAmount', 'ReimbursementCurrencyReimbursementAmount')]
+    [string[]]
+    $GreaterThanOrEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'ExpenseReportID', 'Description', 'ExpenseDate', 'ExpenseAmount', 'AccountID', 'ProjectID', 'TaskID', 'TicketID', 'EntertainmentLocation', 'Miles', 'Origin', 'Destination', 'PurchaseOrderNumber', 'OdometerStart', 'OdometerEnd', 'ExpenseCurrencyID', 'ReceiptAmount', 'ReimbursementAmount', 'ReimbursementCurrencyReimbursementAmount')]
+    [string[]]
+    $LessThan,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'ExpenseReportID', 'Description', 'ExpenseDate', 'ExpenseAmount', 'AccountID', 'ProjectID', 'TaskID', 'TicketID', 'EntertainmentLocation', 'Miles', 'Origin', 'Destination', 'PurchaseOrderNumber', 'OdometerStart', 'OdometerEnd', 'ExpenseCurrencyID', 'ReceiptAmount', 'ReimbursementAmount', 'ReimbursementCurrencyReimbursementAmount')]
+    [string[]]
+    $LessThanOrEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Description', 'EntertainmentLocation', 'Origin', 'Destination', 'PurchaseOrderNumber')]
+    [string[]]
+    $Like,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Description', 'EntertainmentLocation', 'Origin', 'Destination', 'PurchaseOrderNumber')]
+    [string[]]
+    $NotLike,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Description', 'EntertainmentLocation', 'Origin', 'Destination', 'PurchaseOrderNumber')]
+    [string[]]
+    $BeginsWith,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Description', 'EntertainmentLocation', 'Origin', 'Destination', 'PurchaseOrderNumber')]
+    [string[]]
+    $EndsWith,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Description', 'EntertainmentLocation', 'Origin', 'Destination', 'PurchaseOrderNumber')]
+    [string[]]
+    $Contains,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('ExpenseDate')]
+    [string[]]
+    $IsThisDay
+  )
+  dynamicParam {
+    $entity = Get-AtwsFieldInfo -Entity ExpenseItem -EntityInfo
+    $fieldInfo = Get-AtwsFieldInfo -Entity ExpenseItem
+    Get-AtwsDynamicParameterDefinition -Verb 'Get' -Entity $entity -FieldInfo $fieldInfo
+  }
 
     begin { 
         $entityName = 'ExpenseItem'

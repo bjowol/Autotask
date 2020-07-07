@@ -85,14 +85,253 @@ Set-AtwsContractBillingRule
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='Filter', ConfirmImpact='None')]
-  Param()
+  Param
+  (
+# A filter that limits the number of objects that is returned from the API
+    [Parameter(
+      Mandatory = $true,
+      ValueFromRemainingArguments = $true,
+      ParametersetName = 'Filter'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [string[]]
+    $Filter,
 
-    dynamicParam {
-      $entityName = 'ContractBillingRule'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'Get' -Entity $entity -FieldInfo $fieldInfo
-    }  
+# Follow this external ID and return any external objects
+    [Parameter(
+      ParametersetName = 'Filter'
+    )]
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Alias('GetRef')]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet('ContractID', 'ProductID')]
+    [string]
+    $GetReferenceEntityById,
+
+# Return entities of selected type that are referencing to this entity.
+    [Parameter(
+      ParametersetName = 'Filter'
+    )]
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Alias('External')]
+    [ValidateNotNullOrEmpty()]
+    [string]
+    $GetExternalEntityByThisEntityId,
+
+# Return all objects in one query
+    [Parameter(
+      ParametersetName = 'Get_all'
+    )]
+    [switch]
+    $All,
+
+# Contract Billing Rule ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[long][]]
+    $id,
+
+# Invoice Description
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,500)]
+    [string[]]
+    $InvoiceDescription,
+
+# Contract ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[Int][]]
+    $ContractID,
+
+# Product ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[Int][]]
+    $ProductID,
+
+# Active
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[boolean][]]
+    $Active,
+
+# Start Date
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[datetime][]]
+    $StartDate,
+
+# End Date
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[datetime][]]
+    $EndDate,
+
+# Minimum Units
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[Int][]]
+    $MinimumUnits,
+
+# Maximum Units
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[Int][]]
+    $MaximumUnits,
+
+# Create Charges As Billable
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[boolean][]]
+    $CreateChargesAsBillable,
+
+# Include Items In Charge Description
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[boolean][]]
+    $IncludeItemsInChargeDescription,
+
+# Enable Daily Prorating
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[boolean][]]
+    $EnableDailyProrating,
+
+# Daily Prorated Cost
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[decimal][]]
+    $DailyProratedCost,
+
+# Daily Prorated Price
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[decimal][]]
+    $DailyProratedPrice,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'InvoiceDescription', 'ContractID', 'ProductID', 'Active', 'StartDate', 'EndDate', 'MinimumUnits', 'MaximumUnits', 'CreateChargesAsBillable', 'IncludeItemsInChargeDescription', 'EnableDailyProrating', 'DailyProratedCost', 'DailyProratedPrice')]
+    [string[]]
+    $NotEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'InvoiceDescription', 'ContractID', 'ProductID', 'Active', 'StartDate', 'EndDate', 'MinimumUnits', 'MaximumUnits', 'CreateChargesAsBillable', 'IncludeItemsInChargeDescription', 'EnableDailyProrating', 'DailyProratedCost', 'DailyProratedPrice')]
+    [string[]]
+    $IsNull,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'InvoiceDescription', 'ContractID', 'ProductID', 'Active', 'StartDate', 'EndDate', 'MinimumUnits', 'MaximumUnits', 'CreateChargesAsBillable', 'IncludeItemsInChargeDescription', 'EnableDailyProrating', 'DailyProratedCost', 'DailyProratedPrice')]
+    [string[]]
+    $IsNotNull,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'InvoiceDescription', 'ContractID', 'ProductID', 'StartDate', 'EndDate', 'MinimumUnits', 'MaximumUnits', 'DailyProratedCost', 'DailyProratedPrice')]
+    [string[]]
+    $GreaterThan,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'InvoiceDescription', 'ContractID', 'ProductID', 'StartDate', 'EndDate', 'MinimumUnits', 'MaximumUnits', 'DailyProratedCost', 'DailyProratedPrice')]
+    [string[]]
+    $GreaterThanOrEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'InvoiceDescription', 'ContractID', 'ProductID', 'StartDate', 'EndDate', 'MinimumUnits', 'MaximumUnits', 'DailyProratedCost', 'DailyProratedPrice')]
+    [string[]]
+    $LessThan,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'InvoiceDescription', 'ContractID', 'ProductID', 'StartDate', 'EndDate', 'MinimumUnits', 'MaximumUnits', 'DailyProratedCost', 'DailyProratedPrice')]
+    [string[]]
+    $LessThanOrEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('InvoiceDescription')]
+    [string[]]
+    $Like,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('InvoiceDescription')]
+    [string[]]
+    $NotLike,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('InvoiceDescription')]
+    [string[]]
+    $BeginsWith,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('InvoiceDescription')]
+    [string[]]
+    $EndsWith,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('InvoiceDescription')]
+    [string[]]
+    $Contains,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('StartDate', 'EndDate')]
+    [string[]]
+    $IsThisDay
+  )
+  dynamicParam {
+    $entity = Get-AtwsFieldInfo -Entity ContractBillingRule -EntityInfo
+    $fieldInfo = Get-AtwsFieldInfo -Entity ContractBillingRule
+    Get-AtwsDynamicParameterDefinition -Verb 'Get' -Entity $entity -FieldInfo $fieldInfo
+  }
 
     begin { 
         $entityName = 'ContractBillingRule'

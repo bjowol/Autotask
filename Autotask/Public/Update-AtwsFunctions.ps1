@@ -66,15 +66,12 @@ Function Update-AtwsFunctions {
             $null = New-Item -Path "$RootPath" -ItemType Directory -Force
         }
         
-        # Use default cache tenant
-        $Tenant = $Script:Atws.Cache['00']
-
         $Entities = switch ($FunctionSet) {
             'Static' {
-                $Tenant.FieldInfoCache.GetEnumerator() | Where-Object { -not $_.Value.HasPickList }
+                $FieldInfoCache.GetEnumerator() | Where-Object { -not $_.Value.HasPickList }
             }
             'Dynamic' {
-                $Tenant.FieldInfoCache.GetEnumerator() | Where-Object { $_.Value.HasPickList }
+                $FieldInfoCache.GetEnumerator() | Where-Object { $_.Value.HasPickList }
             }
         }
       
@@ -115,7 +112,7 @@ Function Update-AtwsFunctions {
                 $verboseDescription = '{0}: Creating and Invoking functions for entity {1}' -F $caption, $Entity.Name
                 $verboseWarning = '{0}: About to create and Invoke functions for entity {1}. Do you want to continue?' -F $caption, $Entity.Name
        
-                $FunctionDefinition = Get-AtwsDynamicFunctionDefinition -Entity $Entity -FieldInfo $CacheEntry.Value.FieldInfo
+                $FunctionDefinition = Get-AtwsFunctionDefinition -Entity $Entity -FieldInfo $CacheEntry.Value.FieldInfo
         
         
                 foreach ($Function in $FunctionDefinition.GetEnumerator()) {
@@ -140,22 +137,6 @@ Function Update-AtwsFunctions {
         }
     } # Process
     end {
-        $caption = $MyInvocation.MyCommand.Name
-        $verboseDescription = '{0}: Overwriting existing module info cache with updated data.' -F $caption
-        $verboseWarning = '{0}: About to overwrite existing module info cache with updated data. This cannot be undone. Do you want to continue?' -F $caption
-          
-        if ($PSCmdlet.ShouldProcess($verboseDescription, $verboseWarning, $caption)) { 
-            # Save updated base info for connection to new tenants.
-            $BaseEntityInfo = @{ }
-            $BaseEntityInfo['00'] = $Script:Atws.Cache['00']
-        
-            $BaseEntityInfoPath = '{0}\Private\AutotaskFieldInfoCache.xml' -F $MyInvocation.MyCommand.Module.ModuleBase
-            $BaseEntityInfo | Export-Clixml -Path $BaseEntityInfoPath -Force
-    
-            Write-Verbose -Message ('{0}: Updated central module fieldinfocache.' -F $MyInvocation.MyCommand.Name)
-        }
-    
-        Write-Debug ('{0}: End of function' -F $MyInvocation.MyCommand.Name)
-        
+        Write-Debug ('{0}: End of function' -F $MyInvocation.MyCommand.Name)        
     }
 }

@@ -46,15 +46,84 @@ Copies [Autotask.ContractServiceAdjustment] by Id 124 to a new object through th
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='By_parameters', ConfirmImpact='Low')]
-  Param()
- 
-    dynamicParam {
-      $entityName = 'ContractServiceAdjustment'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
-    } 
+  Param
+  (
+# An array of objects to create
+    [Parameter(
+      ParametersetName = 'Input_Object',
+      ValueFromPipeline = $true
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Autotask.ContractServiceAdjustment[]]
+    $InputObject,
 
+# ContractID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $ContractID,
+
+# ServiceID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $ServiceID,
+
+# StartDate
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [datetime]
+    $EffectiveDate,
+
+# UnitChange
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $UnitChange,
+
+# Adjusted Unit Price
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $AdjustedUnitPrice,
+
+# Adjusted Unit Cost
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $AdjustedUnitCost,
+
+# Quote Item Id
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $QuoteItemID,
+
+# Contract Service Id
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $ContractServiceID,
+
+# Allow Repeat Service
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [boolean]
+    $AllowRepeatService
+  )
+
+ 
     begin { 
         $entityName = 'ContractServiceAdjustment'
            

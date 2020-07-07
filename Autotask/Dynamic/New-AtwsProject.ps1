@@ -65,15 +65,304 @@ Set-AtwsProject
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='By_parameters', ConfirmImpact='Low')]
-  Param()
- 
-    dynamicParam {
-      $entityName = 'Project'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
-    } 
+  Param
+  (
+# An array of objects to create
+    [Parameter(
+      ParametersetName = 'Input_Object',
+      ValueFromPipeline = $true
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Autotask.Project[]]
+    $InputObject,
 
+# Project Name
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [Alias('Name')]
+    [ValidateNotNullOrEmpty()]
+    [ValidateLength(0,100)]
+    [string]
+    $ProjectName,
+
+# Account ID
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Int]
+    $AccountID,
+
+# Ext Project Type
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $ExtProjectType,
+
+# Ext Project Number
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,50)]
+    [string]
+    $ExtPNumber,
+
+# Project Number
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,50)]
+    [string]
+    $ProjectNumber,
+
+# Description
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,2000)]
+    [string]
+    $Description,
+
+# Created DateTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $CreateDateTime,
+
+# Created By
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $CreatorResourceID,
+
+# Start Date
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [datetime]
+    $StartDateTime,
+
+# End Date
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [datetime]
+    $EndDateTime,
+
+# Duration
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $Duration,
+
+# Actual Hours
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $ActualHours,
+
+# Actual Billed Hours
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $ActualBilledHours,
+
+# Estimated Time
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $EstimatedTime,
+
+# Labor Estimated Revenue
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $LaborEstimatedRevenue,
+
+# Labor Estimated Costs
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $LaborEstimatedCosts,
+
+# Labor Estimated Margin Percentage
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $LaborEstimatedMarginPercentage,
+
+# Project Cost Revenue
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $ProjectCostsRevenue,
+
+# Project Estimated costs
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $ProjectCostsBudget,
+
+# Project Cost Estimated Margin Percentage
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $ProjectCostEstimatedMarginPercentage,
+
+# Change Orders Revenue
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $ChangeOrdersRevenue,
+
+# Changed Orders
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $ChangeOrdersBudget,
+
+# SG&A
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $SGDA,
+
+# Original Estimated Revenue
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $OriginalEstimatedRevenue,
+
+# Estimated Sales Cost
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $EstimatedSalesCost,
+
+# Contract
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $ContractID,
+
+# Project Lead
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $ProjectLeadResourceID,
+
+# Account Owner
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $CompanyOwnerResourceID,
+
+# Completed Percentage
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $CompletedPercentage,
+
+# Completed date
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $CompletedDateTime,
+
+# Status Detail
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,2000)]
+    [string]
+    $StatusDetail,
+
+# Status Date
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $StatusDateTime,
+
+# purchase_order_number
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,50)]
+    [string]
+    $PurchaseOrderNumber,
+
+# Business Division Subdivision ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $BusinessDivisionSubdivisionID,
+
+# Last Activity By
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $LastActivityResourceID,
+
+# Last Activity Date Time
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $LastActivityDateTime,
+
+# Last Activity Person Type
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $LastActivityPersonType,
+
+# Impersonator Creator Resource ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $ImpersonatorCreatorResourceID
+  )
+  dynamicParam {
+    $entity = Get-AtwsFieldInfo -Entity Project -EntityInfo
+    $fieldInfo = Get-AtwsFieldInfo -Entity Project
+    Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
+  }
+ 
     begin { 
         $entityName = 'Project'
            

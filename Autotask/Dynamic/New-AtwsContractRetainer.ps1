@@ -55,15 +55,105 @@ Set-AtwsContractRetainer
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='By_parameters', ConfirmImpact='Low')]
-  Param()
- 
-    dynamicParam {
-      $entityName = 'ContractRetainer'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
-    } 
+  Param
+  (
+# An array of objects to create
+    [Parameter(
+      ParametersetName = 'Input_Object',
+      ValueFromPipeline = $true
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Autotask.ContractRetainer[]]
+    $InputObject,
 
+# Contract ID
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Int]
+    $ContractID,
+
+# Date Purchased
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [datetime]
+    $DatePurchased,
+
+# StartDate
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [datetime]
+    $StartDate,
+
+# EndDate
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [datetime]
+    $EndDate,
+
+# Amount
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [double]
+    $Amount,
+
+# InvoiceNumber
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,50)]
+    [string]
+    $InvoiceNumber,
+
+# PaymentNumber
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,50)]
+    [string]
+    $PaymentNumber,
+
+# Amount Approved
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $AmountApproved,
+
+# Internal Currency Amount Approved
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $InternalCurrencyAmountApproved,
+
+# Internal Currency Amount
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $InternalCurrencyAmount
+  )
+  dynamicParam {
+    $entity = Get-AtwsFieldInfo -Entity ContractRetainer -EntityInfo
+    $fieldInfo = Get-AtwsFieldInfo -Entity ContractRetainer
+    Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
+  }
+ 
     begin { 
         $entityName = 'ContractRetainer'
            

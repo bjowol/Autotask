@@ -60,15 +60,88 @@ Set-AtwsContractServiceBundle
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='By_parameters', ConfirmImpact='Low')]
-  Param()
- 
-    dynamicParam {
-      $entityName = 'ContractServiceBundle'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
-    } 
+  Param
+  (
+# An array of objects to create
+    [Parameter(
+      ParametersetName = 'Input_Object',
+      ValueFromPipeline = $true
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Autotask.ContractServiceBundle[]]
+    $InputObject,
 
+# Contract ID
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Int]
+    $ContractID,
+
+# Service Bundle ID
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Int]
+    $ServiceBundleID,
+
+# Unit Price
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $UnitPrice,
+
+# Adjusted Price
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $AdjustedPrice,
+
+# Invoice Description
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,1000)]
+    [string]
+    $InvoiceDescription,
+
+# Quote Item Id
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [long]
+    $QuoteItemID,
+
+# Internal Currency Unit Price
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $InternalCurrencyUnitPrice,
+
+# Internal Currency Adjusted Price
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $InternalCurrencyAdjustedPrice,
+
+# Internal Description
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,100)]
+    [string]
+    $InternalDescription
+  )
+
+ 
     begin { 
         $entityName = 'ContractServiceBundle'
            

@@ -68,15 +68,400 @@ Set-AtwsOpportunity
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='By_parameters', ConfirmImpact='Low')]
-  Param()
- 
-    dynamicParam {
-      $entityName = 'Opportunity'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
-    } 
+  Param
+  (
+# An array of objects to create
+    [Parameter(
+      ParametersetName = 'Input_Object',
+      ValueFromPipeline = $true
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Autotask.Opportunity[]]
+    $InputObject,
 
+# AccountObjectID
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Int]
+    $AccountID,
+
+# NumberOfUsers
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [decimal]
+    $AdvancedField1,
+
+# SetupFee
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [decimal]
+    $AdvancedField2,
+
+# HourlyCost
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [decimal]
+    $AdvancedField3,
+
+# DailyCost
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [decimal]
+    $AdvancedField4,
+
+# MonthlyCost
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [decimal]
+    $AdvancedField5,
+
+# Amount
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [decimal]
+    $Amount,
+
+# Barriers
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,500)]
+    [string]
+    $Barriers,
+
+# ContactObjectID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $ContactID,
+
+# Cost
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [decimal]
+    $Cost,
+
+# CreateDate
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [datetime]
+    $CreateDate,
+
+# HelpNeeded
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,500)]
+    [string]
+    $HelpNeeded,
+
+# Market
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,500)]
+    [string]
+    $Market,
+
+# NextStep
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,500)]
+    [string]
+    $NextStep,
+
+# CreatorObjectID
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Int]
+    $OwnerResourceID,
+
+# ProductObjectID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $ProductID,
+
+# ProjClose
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [datetime]
+    $ProjectedCloseDate,
+
+# StartDate
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $ProjectedLiveDate,
+
+# promotion_name
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,50)]
+    [string]
+    $PromotionName,
+
+# ThroughDate
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $ThroughDate,
+
+# Name
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [ValidateLength(0,128)]
+    [string]
+    $Title,
+
+# Closed Date
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $ClosedDate,
+
+# Assessment Score
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $AssessmentScore,
+
+# Technical Assessment Score
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $TechnicalAssessmentScore,
+
+# Relationship Assessment Score
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $RelationshipAssessmentScore,
+
+# Win Reason Detail
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,500)]
+    [string]
+    $WinReasonDetail,
+
+# Loss Reason Detail
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,500)]
+    [string]
+    $LossReasonDetail,
+
+# Last Activity
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $LastActivity,
+
+# Date Stamp
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $DateStamp,
+
+# Probability
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Int]
+    $Probability,
+
+# Revenue Spread
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $RevenueSpread,
+
+# Use Quote Totals
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [boolean]
+    $UseQuoteTotals,
+
+# Total Amount Months
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $TotalAmountMonths,
+
+# Sales Process Percent Complete
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $SalesProcessPercentComplete,
+
+# Sales Order ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $SalesOrderID,
+
+# One-Time Cost
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [decimal]
+    $OnetimeCost,
+
+# One-Time Revenue
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [decimal]
+    $OnetimeRevenue,
+
+# Monthly Cost
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [decimal]
+    $MonthlyCost,
+
+# Monthly Revenue
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [decimal]
+    $MonthlyRevenue,
+
+# Quarterly Cost
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [decimal]
+    $QuarterlyCost,
+
+# Quarterly Revenue
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [decimal]
+    $QuarterlyRevenue,
+
+# Semi-Annual Cost
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [decimal]
+    $SemiannualCost,
+
+# Semi-Annual Revenue
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [decimal]
+    $SemiannualRevenue,
+
+# Yearly Cost
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [decimal]
+    $YearlyCost,
+
+# Yearly Revenue
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [decimal]
+    $YearlyRevenue,
+
+# Business Division Subdivision ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $BusinessDivisionSubdivisionID,
+
+# Lost Date
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $LostDate,
+
+# Promised Fulfillment Date
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $PromisedFulfillmentDate,
+
+# Description
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,8000)]
+    [string]
+    $Description,
+
+# Impersonator Creator Resource ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $ImpersonatorCreatorResourceID
+  )
+  dynamicParam {
+    $entity = Get-AtwsFieldInfo -Entity Opportunity -EntityInfo
+    $fieldInfo = Get-AtwsFieldInfo -Entity Opportunity
+    Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
+  }
+ 
     begin { 
         $entityName = 'Opportunity'
            

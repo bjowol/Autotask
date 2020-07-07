@@ -36,15 +36,32 @@ Set-AtwsProjectCost
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='Input_Object', ConfirmImpact='Low')]
-  Param()
+  Param
+  (
+# Any objects that should be deleted
+    [Parameter(
+      ParametersetName = 'Input_Object',
+      ValueFromPipeline = $true
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Autotask.ProjectCost[]]
+    $InputObject,
+
+# The unique id of an object to delete
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [long[]]
+    $Id
+  )
+  dynamicParam {
+    $entity = Get-AtwsFieldInfo -Entity ProjectCost -EntityInfo
+    $fieldInfo = Get-AtwsFieldInfo -Entity ProjectCost
+    Get-AtwsDynamicParameterDefinition -Verb 'Remove' -Entity $entity -FieldInfo $fieldInfo
+  }
  
-    dynamicParam {
-      $entityName = 'ProjectCost'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'Remove' -Entity $entity -FieldInfo $fieldInfo
-    } 
-    
     begin { 
         $entityName = 'ProjectCost'
     

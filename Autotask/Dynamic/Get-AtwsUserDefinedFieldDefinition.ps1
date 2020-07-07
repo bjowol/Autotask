@@ -91,14 +91,264 @@ Set-AtwsUserDefinedFieldDefinition
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='Filter', ConfirmImpact='None')]
-  Param()
+  Param
+  (
+# A filter that limits the number of objects that is returned from the API
+    [Parameter(
+      Mandatory = $true,
+      ValueFromRemainingArguments = $true,
+      ParametersetName = 'Filter'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [string[]]
+    $Filter,
 
-    dynamicParam {
-      $entityName = 'UserDefinedFieldDefinition'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'Get' -Entity $entity -FieldInfo $fieldInfo
-    }  
+# Follow this external ID and return any external objects
+    [Parameter(
+      ParametersetName = 'Filter'
+    )]
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Alias('GetRef')]
+    [ValidateNotNullOrEmpty()]
+    [string]
+    $GetReferenceEntityById,
+
+# Return entities of selected type that are referencing to this entity.
+    [Parameter(
+      ParametersetName = 'Filter'
+    )]
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Alias('External')]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet('InstalledProductCategoryUdfAssociation:UserDefinedFieldDefinitionID', 'UserDefinedFieldListItem:UdfFieldId')]
+    [string]
+    $GetExternalEntityByThisEntityId,
+
+# Return all objects in one query
+    [Parameter(
+      ParametersetName = 'Get_all'
+    )]
+    [switch]
+    $All,
+
+# ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[long][]]
+    $id,
+
+# Name
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [ValidateLength(0,45)]
+    [string[]]
+    $Name,
+
+# Description
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,128)]
+    [string[]]
+    $Description,
+
+# Default Value
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,1024)]
+    [string[]]
+    $DefaultValue,
+
+# Field Mapping
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[boolean][]]
+    $IsFieldMapping,
+
+# Protected
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[boolean][]]
+    $IsProtected,
+
+# Required
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[boolean][]]
+    $IsRequired,
+
+# Active
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[boolean][]]
+    $IsActive,
+
+# Create Date
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[datetime][]]
+    $CreateDate,
+
+# Merge Variable Name
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,100)]
+    [string[]]
+    $MergeVariableName,
+
+# Crm to Project Udf Id
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[long][]]
+    $CrmToProjectUdfId,
+
+# Sort Order
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[Int][]]
+    $SortOrder,
+
+# Number of Decimal Places
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[Int][]]
+    $NumberOfDecimalPlaces,
+
+# Visible to Client Portal
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[boolean][]]
+    $IsVisibleToClientPortal,
+
+# Encrypted
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[boolean][]]
+    $IsEncrypted,
+
+# Is Private
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[boolean][]]
+    $IsPrivate,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'Name', 'Description', 'DefaultValue', 'IsFieldMapping', 'IsProtected', 'IsRequired', 'IsActive', 'CreateDate', 'MergeVariableName', 'CrmToProjectUdfId', 'SortOrder', 'NumberOfDecimalPlaces', 'IsVisibleToClientPortal', 'IsEncrypted', 'IsPrivate')]
+    [string[]]
+    $NotEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'Name', 'Description', 'DefaultValue', 'IsFieldMapping', 'IsProtected', 'IsRequired', 'IsActive', 'CreateDate', 'MergeVariableName', 'CrmToProjectUdfId', 'SortOrder', 'NumberOfDecimalPlaces', 'IsVisibleToClientPortal', 'IsEncrypted', 'IsPrivate')]
+    [string[]]
+    $IsNull,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'Name', 'Description', 'DefaultValue', 'IsFieldMapping', 'IsProtected', 'IsRequired', 'IsActive', 'CreateDate', 'MergeVariableName', 'CrmToProjectUdfId', 'SortOrder', 'NumberOfDecimalPlaces', 'IsVisibleToClientPortal', 'IsEncrypted', 'IsPrivate')]
+    [string[]]
+    $IsNotNull,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'Name', 'Description', 'DefaultValue', 'CreateDate', 'MergeVariableName', 'CrmToProjectUdfId', 'SortOrder', 'NumberOfDecimalPlaces')]
+    [string[]]
+    $GreaterThan,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'Name', 'Description', 'DefaultValue', 'CreateDate', 'MergeVariableName', 'CrmToProjectUdfId', 'SortOrder', 'NumberOfDecimalPlaces')]
+    [string[]]
+    $GreaterThanOrEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'Name', 'Description', 'DefaultValue', 'CreateDate', 'MergeVariableName', 'CrmToProjectUdfId', 'SortOrder', 'NumberOfDecimalPlaces')]
+    [string[]]
+    $LessThan,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'Name', 'Description', 'DefaultValue', 'CreateDate', 'MergeVariableName', 'CrmToProjectUdfId', 'SortOrder', 'NumberOfDecimalPlaces')]
+    [string[]]
+    $LessThanOrEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Name', 'Description', 'DefaultValue', 'MergeVariableName')]
+    [string[]]
+    $Like,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Name', 'Description', 'DefaultValue', 'MergeVariableName')]
+    [string[]]
+    $NotLike,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Name', 'Description', 'DefaultValue', 'MergeVariableName')]
+    [string[]]
+    $BeginsWith,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Name', 'Description', 'DefaultValue', 'MergeVariableName')]
+    [string[]]
+    $EndsWith,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Name', 'Description', 'DefaultValue', 'MergeVariableName')]
+    [string[]]
+    $Contains,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('CreateDate')]
+    [string[]]
+    $IsThisDay
+  )
+  dynamicParam {
+    $entity = Get-AtwsFieldInfo -Entity UserDefinedFieldDefinition -EntityInfo
+    $fieldInfo = Get-AtwsFieldInfo -Entity UserDefinedFieldDefinition
+    Get-AtwsDynamicParameterDefinition -Verb 'Get' -Entity $entity -FieldInfo $fieldInfo
+  }
 
     begin { 
         $entityName = 'UserDefinedFieldDefinition'

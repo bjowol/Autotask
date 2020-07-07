@@ -36,15 +36,28 @@ Set-AtwsInstalledProductType
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='Input_Object', ConfirmImpact='Low')]
-  Param()
+  Param
+  (
+# Any objects that should be deleted
+    [Parameter(
+      ParametersetName = 'Input_Object',
+      ValueFromPipeline = $true
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Autotask.InstalledProductType[]]
+    $InputObject,
+
+# The unique id of an object to delete
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [long[]]
+    $Id
+  )
+
  
-    dynamicParam {
-      $entityName = 'InstalledProductType'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'Remove' -Entity $entity -FieldInfo $fieldInfo
-    } 
-    
     begin { 
         $entityName = 'InstalledProductType'
     

@@ -108,14 +108,237 @@ An example of a more complex query. This command returns any AllocationCodes wit
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='Filter', ConfirmImpact='None')]
-  Param()
+  Param
+  (
+# A filter that limits the number of objects that is returned from the API
+    [Parameter(
+      Mandatory = $true,
+      ValueFromRemainingArguments = $true,
+      ParametersetName = 'Filter'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [string[]]
+    $Filter,
 
-    dynamicParam {
-      $entityName = 'AllocationCode'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'Get' -Entity $entity -FieldInfo $fieldInfo
-    }  
+# Follow this external ID and return any external objects
+    [Parameter(
+      ParametersetName = 'Filter'
+    )]
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Alias('GetRef')]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet('AfterHoursWorkType', 'TaxCategoryID')]
+    [string]
+    $GetReferenceEntityById,
+
+# Return entities of selected type that are referencing to this entity.
+    [Parameter(
+      ParametersetName = 'Filter'
+    )]
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Alias('External')]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet('AllocationCode:AfterHoursWorkType', 'BillingItem:AllocationCodeID', 'ChangeOrderCost:AllocationCodeID', 'ContractCost:AllocationCodeID', 'ContractExclusionAllocationCode:AllocationCodeID', 'ContractExclusionSetExcludedWorkType:ExcludedWorkTypeID', 'ContractMilestone:AllocationCodeID', 'PriceListMaterialCode:AllocationCodeID', 'Product:CostAllocationCodeID', 'Product:ProductAllocationCodeID', 'ProjectCost:AllocationCodeID', 'QuoteItem:CostID', 'QuoteItem:ExpenseID', 'Service:AllocationCodeID', 'ServiceBundle:AllocationCodeID', 'ShippingType:AllocationCodeID', 'Subscription:MaterialCodeID', 'Task:AllocationCodeID', 'Ticket:AllocationCodeID', 'TicketCategoryFieldDefaults:WorkTypeID', 'TicketCost:AllocationCodeID', 'TimeEntry:AllocationCodeID', 'TimeEntry:InternalAllocationCodeID')]
+    [string]
+    $GetExternalEntityByThisEntityId,
+
+# Return all objects in one query
+    [Parameter(
+      ParametersetName = 'Get_all'
+    )]
+    [switch]
+    $All,
+
+# Allocation Code ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[long][]]
+    $id,
+
+# Department ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[Int][]]
+    $Department,
+
+# Name
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,200)]
+    [string[]]
+    $Name,
+
+# Number
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,100)]
+    [string[]]
+    $ExternalNumber,
+
+# Description
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,500)]
+    [string[]]
+    $Description,
+
+# Active
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[boolean][]]
+    $Active,
+
+# Unit Cost
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[double][]]
+    $UnitCost,
+
+# Unit Price
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[double][]]
+    $UnitPrice,
+
+# Tax Category ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[Int][]]
+    $TaxCategoryID,
+
+# Markup Rate
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[double][]]
+    $MarkupRate,
+
+# Is Excluded From New Contracts
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[boolean][]]
+    $IsExcludedFromNewContracts,
+
+# After Hours Work Type
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[Int][]]
+    $AfterHoursWorkType,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'Department', 'Name', 'ExternalNumber', 'Description', 'Active', 'UnitCost', 'UnitPrice', 'TaxCategoryID', 'MarkupRate', 'IsExcludedFromNewContracts', 'AfterHoursWorkType')]
+    [string[]]
+    $NotEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'Department', 'Name', 'ExternalNumber', 'Description', 'Active', 'UnitCost', 'UnitPrice', 'TaxCategoryID', 'MarkupRate', 'IsExcludedFromNewContracts', 'AfterHoursWorkType')]
+    [string[]]
+    $IsNull,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'Department', 'Name', 'ExternalNumber', 'Description', 'Active', 'UnitCost', 'UnitPrice', 'TaxCategoryID', 'MarkupRate', 'IsExcludedFromNewContracts', 'AfterHoursWorkType')]
+    [string[]]
+    $IsNotNull,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'Department', 'Name', 'ExternalNumber', 'Description', 'UnitCost', 'UnitPrice', 'TaxCategoryID', 'MarkupRate', 'AfterHoursWorkType')]
+    [string[]]
+    $GreaterThan,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'Department', 'Name', 'ExternalNumber', 'Description', 'UnitCost', 'UnitPrice', 'TaxCategoryID', 'MarkupRate', 'AfterHoursWorkType')]
+    [string[]]
+    $GreaterThanOrEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'Department', 'Name', 'ExternalNumber', 'Description', 'UnitCost', 'UnitPrice', 'TaxCategoryID', 'MarkupRate', 'AfterHoursWorkType')]
+    [string[]]
+    $LessThan,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'Department', 'Name', 'ExternalNumber', 'Description', 'UnitCost', 'UnitPrice', 'TaxCategoryID', 'MarkupRate', 'AfterHoursWorkType')]
+    [string[]]
+    $LessThanOrEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Name', 'ExternalNumber', 'Description')]
+    [string[]]
+    $Like,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Name', 'ExternalNumber', 'Description')]
+    [string[]]
+    $NotLike,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Name', 'ExternalNumber', 'Description')]
+    [string[]]
+    $BeginsWith,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Name', 'ExternalNumber', 'Description')]
+    [string[]]
+    $EndsWith,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Name', 'ExternalNumber', 'Description')]
+    [string[]]
+    $Contains,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [string[]]
+    $IsThisDay
+  )
+  dynamicParam {
+    $entity = Get-AtwsFieldInfo -Entity AllocationCode -EntityInfo
+    $fieldInfo = Get-AtwsFieldInfo -Entity AllocationCode
+    Get-AtwsDynamicParameterDefinition -Verb 'Get' -Entity $entity -FieldInfo $fieldInfo
+  }
 
     begin { 
         $entityName = 'AllocationCode'

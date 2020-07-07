@@ -44,10 +44,18 @@ Function Convert-AtwsFunctionToText {
         $moduleVersion = $My.moduleVersion
 
         # The textframe with placeholders for all dynamic elements
-        $textFrame = "#Requires -Version {0}`n#Version {1}`n{2}`nFunction {3}`n{{`n{4}`n  [CmdLetBinding(SupportsShouldProcess = `$true, DefaultParameterSetName='{5}', ConfirmImpact='{6}')]`n  Param`n  (`n{7}`n  )`n{8}`n}}"
+        $textFrame = "#Requires -Version {0}`n#Version {1}`n{2}`nFunction {3}`n{{`n{4}`n  [CmdLetBinding(SupportsShouldProcess = `$true, DefaultParameterSetName='{5}', ConfirmImpact='{6}')]`n  Param`n  (`n{7}`n  )`n{8}`n{9}`n}}"
     }
   
     process {
+        # Do we need to include dynamic parameters with this function
+        $dynamicParameters = if($AtwsFunction.DynamicParameters) {
+            "  dynamicParam {{`n    `$entity = Get-AtwsFieldInfo -Entity {0} -EntityInfo`n    `$fieldInfo = Get-AtwsFieldInfo -Entity {0}`n    Get-AtwsDynamicParameterDefinition -Verb '{1}' -Entity `$entity -FieldInfo `$fieldInfo`n  }}" -F $AtwsFunction.EntityName, $AtwsFunction.Verb
+        }
+        else {
+            ''
+        }
+
         # Generate the function text from $textframe with all placeholders replaced with the correct variable
         $functionText = $textFrame -F
         $requiredVersion,
@@ -58,6 +66,7 @@ Function Convert-AtwsFunctionToText {
         $AtwsFunction.DefaultParameterSetName,
         $AtwsFunction.ConfirmImpact,
         $($AtwsFunction.Parameters -join ",`n`n"),
+        $dynamicParameters,
         $AtwsFunction.Definition
     }
   

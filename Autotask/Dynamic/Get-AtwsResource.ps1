@@ -32,49 +32,128 @@ Additional operators for [string] parameters are:
 Properties with picklists are:
 
 EmailTypeCode
- 
+ MOBILE - Mobile email service
+ PAGER - Pager e-mail address
+ PRIMARY - Primary e-mail address
+ SECONDARY - Secondary e-mail address
+ SMS - SMS text messaging address
 
 EmailTypeCode2
- 
+ MOBILE - Mobile email service
+ PAGER - Pager e-mail address
+ PRIMARY - Primary e-mail address
+ SECONDARY - Secondary e-mail address
+ SMS - SMS text messaging address
 
 EmailTypeCode3
- 
+ MOBILE - Mobile email service
+ PAGER - Pager e-mail address
+ PRIMARY - Primary e-mail address
+ SECONDARY - Secondary e-mail address
+ SMS - SMS text messaging address
 
 Gender
- 
+ F - Female
+ M - Male
 
 Greeting
- 
+ 1 - Mr.
+ 2 - Mrs.
+ 3 - Ms.
 
 LocationID
- 
+ 90682 - Hønefoss
+ 90684 - ECIT Group Services
+ 90685 - Fornebu
+ 90686 - Fornebu (Holiday Set 2)
+ 90687 - Utdatert Location
+ 90688 - Autotask API
+ 90689 - Nøtterøy
+ 90690 - Drammen
+ 90691 - Drammen (Holiday Set 2)
+ 90692 - Hønefoss (Holiday Set 2)
 
 ResourceType
- 
+ Contractor - Contractor
+ Employee - Employee
 
 Suffix
  
 
 TravelAvailabilityPct
- 
+ 0% - 0%
+ up to 100% - up to 100%
+ up to 25% - up to 25%
+ up to 50% - up to 50%
+ up to 75% - up to 75%
 
 UserType
- 
+ 7 - Service Desk User
+ 17 - Full Access (system)
+ 18 - System Administrator - Full tilgang
+ 19 - Sales
+ 20 - Service Desk User - Standard bruker
+ 21 - Dashboard User (system)
+ 22 - Minimal Access (system)
+ 23 - Service Desk User - Standard bruker+Kontrakter
+ 24 - API User (system)
+ 26 - Service Desk User - Standard bruker+Kontrakt+Kost
+ 27 - API User - custom changes
+ 28 - ECIT Group Services - Service Desk User
+ 29 - ECIT Group Services - Manager
+ 33 - System Administrator (system)
+ 34 - Manager (system)
+ 35 - Project Manager (system)
+ 36 - Sales (system)
+ 37 - Team Member (system)
+ 38 - Contractor (system)
+ 39 - Service Desk User (system)
+ 40 - Private CRM (system)
+ 41 - Time and Attendance (system)
+ 48 - Copy (1) of Service Desk User - Standard bruker
+ 49 - Service Desk User - Standard bruker+Kontrakt(les)
+ 51 - Co-Managed Help Desk (system)
+ 52 - Manager + Add Contacts
+ 53 - Service Desk User - Standard bruker+Kontrakt+exten
+ 54 - Jon Erik
+ 55 - Stian Mauritzen (copy og S&O+Products & Services)
 
 DateFormat
- 
+ MM/dd/yyyy - MM/dd/yyyy
+ MM-dd-yyyy - MM-dd-yyyy
+ MM.dd.yyyy - MM.dd.yyyy
+ dd/MM/yyyy - dd/MM/yyyy
+ dd-MM-yyyy - dd-MM-yyyy
+ dd.MM.yyyy - dd.MM.yyyy
+ yyyy/MM/dd - yyyy/MM/dd
+ yyyy-MM-dd - yyyy-MM-dd
+ yyyy.MM.dd - yyyy.MM.dd
 
 TimeFormat
- 
+ hh:mm a - hh:mm a
+ HH:mm - HH:mm
+ h:mm a - h:mm a
 
 PayrollType
- 
+ 1 - Salary
+ 2 - Hourly
+ 3 - Contractor
+ 4 - Salary Non Exempt
 
 NumberFormat
- 
+ X,XXX.XX - X,XXX.XX
+ X.XXX,XX - X.XXX,XX
 
 LicenseType
- 
+ 1 - Administrator
+ 2 - Executive
+ 3 - Professional
+ 4 - Team Member
+ 5 - Time & Attendance Only
+ 6 - Dashboard User
+ 7 - API User
+ 8 - Contractor
+ 9 - Co-Managed Help Desk
 
 Entities that have fields that refer to the base entity of this CmdLet:
 
@@ -186,14 +265,301 @@ Set-AtwsResource
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='Filter', ConfirmImpact='None')]
-  Param()
+  Param
+  (
+# A filter that limits the number of objects that is returned from the API
+    [Parameter(
+      Mandatory = $true,
+      ValueFromRemainingArguments = $true,
+      ParametersetName = 'Filter'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [string[]]
+    $Filter,
 
-    dynamicParam {
-      $entityName = 'Resource'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'Get' -Entity $entity -FieldInfo $fieldInfo
-    }  
+# Follow this external ID and return any external objects
+    [Parameter(
+      ParametersetName = 'Filter'
+    )]
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Alias('GetRef')]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet('DefaultServiceDeskRoleID')]
+    [string]
+    $GetReferenceEntityById,
+
+# Return entities of selected type that are referencing to this entity.
+    [Parameter(
+      ParametersetName = 'Filter'
+    )]
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Alias('External')]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet('Account:CreatedByResourceID', 'Account:ImpersonatorCreatorResourceID', 'Account:OwnerResourceID', 'AccountNote:AssignedResourceID', 'AccountNote:ImpersonatorCreatorResourceID', 'AccountNote:ImpersonatorUpdaterResourceID', 'AccountTeam:ResourceID', 'AccountToDo:AssignedToResourceID', 'AccountToDo:CreatorResourceID', 'AccountToDo:ImpersonatorCreatorResourceID', 'AccountWebhook:OwnerResourceID', 'AccountWebhookExcludedResource:ResourceID', 'Appointment:CreatorResourceID', 'Appointment:ResourceID', 'AttachmentInfo:AttachedByResourceID', 'AttachmentInfo:ImpersonatorCreatorResourceID', 'BillingItem:AccountManagerWhenApprovedID', 'BillingItem:ItemApproverID', 'BillingItemApprovalLevel:ApprovalResourceID', 'BusinessDivisionSubdivisionResource:ResourceID', 'ChangeOrderCost:CreatorResourceID', 'ChangeOrderCost:StatusLastModifiedBy', 'ComanagedAssociation:ResourceID', 'Contact:ImpersonatorCreatorResourceID', 'ContactWebhook:OwnerResourceID', 'ContactWebhookExcludedResource:ResourceID', 'ContractCost:CreatorResourceID', 'ContractMilestone:CreatorResourceID', 'ContractNote:CreatorResourceID', 'ContractNote:ImpersonatorCreatorResourceID', 'ContractNote:ImpersonatorUpdaterResourceID', 'ContractRoleCost:ResourceID', 'Currency:UpdateResourceId', 'ExpenseReport:ApproverID', 'ExpenseReport:SubmitterID', 'InstalledProduct:CreatedByPersonID', 'InstalledProduct:ImpersonatorCreatorResourceID', 'InstalledProduct:InstalledByID', 'InstalledProduct:LastActivityPersonID', 'InstalledProductNote:CreatorResourceID', 'InstalledProductNote:ImpersonatorCreatorResourceID', 'InstalledProductNote:ImpersonatorUpdaterResourceID', 'InventoryItem:ImpersonatorCreatorResourceID', 'InventoryLocation:ImpersonatorCreatorResourceID', 'InventoryLocation:ResourceID', 'InventoryTransfer:TransferByResourceID', 'Invoice:CreatorResourceID', 'Invoice:VoidedByResourceID', 'NotificationHistory:InitiatingResourceID', 'Opportunity:ImpersonatorCreatorResourceID', 'Opportunity:OwnerResourceID', 'Phase:CreatorResourceID', 'Product:ImpersonatorCreatorResourceID', 'Project:CompanyOwnerResourceID', 'Project:CreatorResourceID', 'Project:ImpersonatorCreatorResourceID', 'Project:LastActivityResourceID', 'Project:ProjectLeadResourceID', 'ProjectCost:CreatorResourceID', 'ProjectNote:CreatorResourceID', 'ProjectNote:ImpersonatorCreatorResourceID', 'ProjectNote:ImpersonatorUpdaterResourceID', 'PurchaseOrder:CreatorResourceID', 'PurchaseOrder:ImpersonatorCreatorResourceID', 'PurchaseOrderReceive:ReceivedByResourceID', 'Quote:ApprovalStatusChangedByResourceID', 'Quote:CreatorResourceID', 'Quote:ImpersonatorCreatorResourceID', 'Quote:LastModifiedBy', 'QuoteTemplate:CreatedBy', 'QuoteTemplate:LastActivityBy', 'ResourceRole:ResourceID', 'ResourceRoleDepartment:ResourceID', 'ResourceRoleQueue:ResourceID', 'ResourceServiceDeskRole:ResourceID', 'ResourceSkill:ResourceID', 'SalesOrder:ImpersonatorCreatorResourceID', 'SalesOrder:OwnerResourceID', 'Service:CreatorResourceID', 'Service:UpdateResourceID', 'ServiceBundle:CreatorResourceID', 'ServiceBundle:UpdateResourceID', 'ServiceCall:ImpersonatorCreatorResourceID', 'ServiceCallTaskResource:ResourceID', 'ServiceCallTicketResource:ResourceID', 'ServiceLevelAgreementResults:FirstResponseInitiatingResourceID', 'ServiceLevelAgreementResults:FirstResponseResourceID', 'ServiceLevelAgreementResults:ResolutionPlanResourceID', 'ServiceLevelAgreementResults:ResolutionResourceID', 'Subscription:ImpersonatorCreatorResourceID', 'Task:AssignedResourceID', 'Task:CompletedByResourceID', 'Task:CreatorResourceID', 'Task:LastActivityResourceID', 'TaskNote:CreatorResourceID', 'TaskNote:ImpersonatorCreatorResourceID', 'TaskNote:ImpersonatorUpdaterResourceID', 'TaskSecondaryResource:ResourceID', 'Ticket:AssignedResourceID', 'Ticket:CompletedByResourceID', 'Ticket:CreatorResourceID', 'Ticket:ImpersonatorCreatorResourceID', 'Ticket:LastActivityResourceID', 'TicketChangeRequestApproval:ResourceID', 'TicketChecklistItem:CompletedByResourceID', 'TicketCost:CreatorResourceID', 'TicketHistory:ResourceID', 'TicketNote:CreatorResourceID', 'TicketNote:ImpersonatorCreatorResourceID', 'TicketNote:ImpersonatorUpdaterResourceID', 'TicketSecondaryResource:ResourceID', 'TimeEntry:BillingApprovalResourceID', 'TimeEntry:ImpersonatorCreatorResourceID', 'TimeEntry:ImpersonatorUpdaterResourceID', 'TimeEntry:ResourceID')]
+    [string]
+    $GetExternalEntityByThisEntityId,
+
+# Return all objects in one query
+    [Parameter(
+      ParametersetName = 'Get_all'
+    )]
+    [switch]
+    $All,
+
+# Status
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[boolean][]]
+    $Active,
+
+# Email
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [ValidateLength(0,254)]
+    [string[]]
+    $Email,
+
+# Add Email 1
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,254)]
+    [string[]]
+    $Email2,
+
+# Add Email 2
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,254)]
+    [string[]]
+    $Email3,
+
+# First Name
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [ValidateLength(0,50)]
+    [string[]]
+    $FirstName,
+
+# Home Phone
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,25)]
+    [string[]]
+    $HomePhone,
+
+# Resource ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[long][]]
+    $id,
+
+# Pay Roll Identifier
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,32)]
+    [string[]]
+    $Initials,
+
+# Last Name
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [ValidateLength(0,50)]
+    [string[]]
+    $LastName,
+
+# Middle Initial
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,50)]
+    [string[]]
+    $MiddleName,
+
+# Mobile Phone
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,25)]
+    [string[]]
+    $MobilePhone,
+
+# Office Extension
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,10)]
+    [string[]]
+    $OfficeExtension,
+
+# Office Phone
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,25)]
+    [string[]]
+    $OfficePhone,
+
+# Title
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,50)]
+    [string[]]
+    $Title,
+
+# UserName
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [ValidateLength(0,32)]
+    [string[]]
+    $UserName,
+
+# Accounting Reference ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,100)]
+    [string[]]
+    $AccountingReferenceID,
+
+# Interal Cost
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[double][]]
+    $InternalCost,
+
+# Hire Date
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[datetime][]]
+    $HireDate,
+
+# Survey Resource Rating
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[double][]]
+    $SurveyResourceRating,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Active', 'Email', 'Email2', 'Email3', 'FirstName', 'HomePhone', 'id', 'Initials', 'LastName', 'MiddleName', 'MobilePhone', 'OfficeExtension', 'OfficePhone', 'Title', 'UserName', 'AccountingReferenceID', 'InternalCost', 'HireDate', 'SurveyResourceRating')]
+    [string[]]
+    $NotEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Active', 'Email', 'Email2', 'Email3', 'FirstName', 'HomePhone', 'id', 'Initials', 'LastName', 'MiddleName', 'MobilePhone', 'OfficeExtension', 'OfficePhone', 'Title', 'UserName', 'AccountingReferenceID', 'InternalCost', 'HireDate', 'SurveyResourceRating')]
+    [string[]]
+    $IsNull,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Active', 'Email', 'Email2', 'Email3', 'FirstName', 'HomePhone', 'id', 'Initials', 'LastName', 'MiddleName', 'MobilePhone', 'OfficeExtension', 'OfficePhone', 'Title', 'UserName', 'AccountingReferenceID', 'InternalCost', 'HireDate', 'SurveyResourceRating')]
+    [string[]]
+    $IsNotNull,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Email', 'Email2', 'Email3', 'FirstName', 'HomePhone', 'id', 'Initials', 'LastName', 'MiddleName', 'MobilePhone', 'OfficeExtension', 'OfficePhone', 'Title', 'UserName', 'AccountingReferenceID', 'InternalCost', 'HireDate', 'SurveyResourceRating')]
+    [string[]]
+    $GreaterThan,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Email', 'Email2', 'Email3', 'FirstName', 'HomePhone', 'id', 'Initials', 'LastName', 'MiddleName', 'MobilePhone', 'OfficeExtension', 'OfficePhone', 'Title', 'UserName', 'AccountingReferenceID', 'InternalCost', 'HireDate', 'SurveyResourceRating')]
+    [string[]]
+    $GreaterThanOrEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Email', 'Email2', 'Email3', 'FirstName', 'HomePhone', 'id', 'Initials', 'LastName', 'MiddleName', 'MobilePhone', 'OfficeExtension', 'OfficePhone', 'Title', 'UserName', 'AccountingReferenceID', 'InternalCost', 'HireDate', 'SurveyResourceRating')]
+    [string[]]
+    $LessThan,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Email', 'Email2', 'Email3', 'FirstName', 'HomePhone', 'id', 'Initials', 'LastName', 'MiddleName', 'MobilePhone', 'OfficeExtension', 'OfficePhone', 'Title', 'UserName', 'AccountingReferenceID', 'InternalCost', 'HireDate', 'SurveyResourceRating')]
+    [string[]]
+    $LessThanOrEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Email', 'Email2', 'Email3', 'FirstName', 'HomePhone', 'Initials', 'LastName', 'MiddleName', 'MobilePhone', 'OfficeExtension', 'OfficePhone', 'Title', 'UserName', 'AccountingReferenceID')]
+    [string[]]
+    $Like,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Email', 'Email2', 'Email3', 'FirstName', 'HomePhone', 'Initials', 'LastName', 'MiddleName', 'MobilePhone', 'OfficeExtension', 'OfficePhone', 'Title', 'UserName', 'AccountingReferenceID')]
+    [string[]]
+    $NotLike,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Email', 'Email2', 'Email3', 'FirstName', 'HomePhone', 'Initials', 'LastName', 'MiddleName', 'MobilePhone', 'OfficeExtension', 'OfficePhone', 'Title', 'UserName', 'AccountingReferenceID')]
+    [string[]]
+    $BeginsWith,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Email', 'Email2', 'Email3', 'FirstName', 'HomePhone', 'Initials', 'LastName', 'MiddleName', 'MobilePhone', 'OfficeExtension', 'OfficePhone', 'Title', 'UserName', 'AccountingReferenceID')]
+    [string[]]
+    $EndsWith,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Email', 'Email2', 'Email3', 'FirstName', 'HomePhone', 'Initials', 'LastName', 'MiddleName', 'MobilePhone', 'OfficeExtension', 'OfficePhone', 'Title', 'UserName', 'AccountingReferenceID')]
+    [string[]]
+    $Contains,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('HireDate')]
+    [string[]]
+    $IsThisDay
+  )
+  dynamicParam {
+    $entity = Get-AtwsFieldInfo -Entity Resource -EntityInfo
+    $fieldInfo = Get-AtwsFieldInfo -Entity Resource
+    Get-AtwsDynamicParameterDefinition -Verb 'Get' -Entity $entity -FieldInfo $fieldInfo
+  }
 
     begin { 
         $entityName = 'Resource'

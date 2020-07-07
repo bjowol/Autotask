@@ -75,14 +75,224 @@ Set-AtwsContractService
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='Filter', ConfirmImpact='None')]
-  Param()
+  Param
+  (
+# A filter that limits the number of objects that is returned from the API
+    [Parameter(
+      Mandatory = $true,
+      ValueFromRemainingArguments = $true,
+      ParametersetName = 'Filter'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [string[]]
+    $Filter,
 
-    dynamicParam {
-      $entityName = 'ContractService'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'Get' -Entity $entity -FieldInfo $fieldInfo
-    }  
+# Follow this external ID and return any external objects
+    [Parameter(
+      ParametersetName = 'Filter'
+    )]
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Alias('GetRef')]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet('ContractID', 'QuoteItemID', 'ServiceID')]
+    [string]
+    $GetReferenceEntityById,
+
+# Return entities of selected type that are referencing to this entity.
+    [Parameter(
+      ParametersetName = 'Filter'
+    )]
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Alias('External')]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet('ChangeOrderCost:ContractServiceID', 'ContractCost:ContractServiceID', 'ContractServiceAdjustment:ContractServiceID', 'ContractServiceUnit:ContractServiceID', 'InstalledProduct:ContractServiceID', 'ProjectCost:ContractServiceID', 'Ticket:ContractServiceID', 'TicketCost:ContractServiceID', 'TimeEntry:ContractServiceID')]
+    [string]
+    $GetExternalEntityByThisEntityId,
+
+# Return all objects in one query
+    [Parameter(
+      ParametersetName = 'Get_all'
+    )]
+    [switch]
+    $All,
+
+# Contract Service ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[long][]]
+    $id,
+
+# Contract ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[Int][]]
+    $ContractID,
+
+# Service ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[Int][]]
+    $ServiceID,
+
+# Unit Price
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[double][]]
+    $UnitPrice,
+
+# Adjusted Price
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[double][]]
+    $AdjustedPrice,
+
+# Invoice Description
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,1000)]
+    [string[]]
+    $InvoiceDescription,
+
+# Quote Item Id
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[long][]]
+    $QuoteItemID,
+
+# Internal Currency Unit Price
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[double][]]
+    $InternalCurrencyUnitPrice,
+
+# Internal Currency Adjusted Price
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[double][]]
+    $InternalCurrencyAdjustedPrice,
+
+# Internal Description
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,100)]
+    [string[]]
+    $InternalDescription,
+
+# Unit Cost
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[double][]]
+    $UnitCost,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'ContractID', 'ServiceID', 'UnitPrice', 'AdjustedPrice', 'InvoiceDescription', 'QuoteItemID', 'InternalCurrencyUnitPrice', 'InternalCurrencyAdjustedPrice', 'InternalDescription', 'UnitCost')]
+    [string[]]
+    $NotEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'ContractID', 'ServiceID', 'UnitPrice', 'AdjustedPrice', 'InvoiceDescription', 'QuoteItemID', 'InternalCurrencyUnitPrice', 'InternalCurrencyAdjustedPrice', 'InternalDescription', 'UnitCost')]
+    [string[]]
+    $IsNull,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'ContractID', 'ServiceID', 'UnitPrice', 'AdjustedPrice', 'InvoiceDescription', 'QuoteItemID', 'InternalCurrencyUnitPrice', 'InternalCurrencyAdjustedPrice', 'InternalDescription', 'UnitCost')]
+    [string[]]
+    $IsNotNull,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'ContractID', 'ServiceID', 'UnitPrice', 'AdjustedPrice', 'InvoiceDescription', 'QuoteItemID', 'InternalCurrencyUnitPrice', 'InternalCurrencyAdjustedPrice', 'InternalDescription', 'UnitCost')]
+    [string[]]
+    $GreaterThan,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'ContractID', 'ServiceID', 'UnitPrice', 'AdjustedPrice', 'InvoiceDescription', 'QuoteItemID', 'InternalCurrencyUnitPrice', 'InternalCurrencyAdjustedPrice', 'InternalDescription', 'UnitCost')]
+    [string[]]
+    $GreaterThanOrEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'ContractID', 'ServiceID', 'UnitPrice', 'AdjustedPrice', 'InvoiceDescription', 'QuoteItemID', 'InternalCurrencyUnitPrice', 'InternalCurrencyAdjustedPrice', 'InternalDescription', 'UnitCost')]
+    [string[]]
+    $LessThan,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'ContractID', 'ServiceID', 'UnitPrice', 'AdjustedPrice', 'InvoiceDescription', 'QuoteItemID', 'InternalCurrencyUnitPrice', 'InternalCurrencyAdjustedPrice', 'InternalDescription', 'UnitCost')]
+    [string[]]
+    $LessThanOrEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('InvoiceDescription', 'InternalDescription')]
+    [string[]]
+    $Like,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('InvoiceDescription', 'InternalDescription')]
+    [string[]]
+    $NotLike,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('InvoiceDescription', 'InternalDescription')]
+    [string[]]
+    $BeginsWith,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('InvoiceDescription', 'InternalDescription')]
+    [string[]]
+    $EndsWith,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('InvoiceDescription', 'InternalDescription')]
+    [string[]]
+    $Contains,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [string[]]
+    $IsThisDay
+  )
+
 
     begin { 
         $entityName = 'ContractService'

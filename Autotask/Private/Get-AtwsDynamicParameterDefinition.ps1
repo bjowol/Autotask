@@ -64,68 +64,7 @@ Function Get-AtwsDynamicParameterDefinition {
     }
 
     process { 
-        $TypeName = 'Autotask.{0}' -F $Entity.Name
-        
-        # Hardcoded parameters
-        if ($Verb -eq 'Get') {
-            # -Filter
-            $Comment = 'A filter that limits the number of objects that is returned from the API'
-            $parameters += Get-AtwsDynamicParameter -Name 'Filter' -SetName 'Filter' -Type 'string' -Mandatory -Remaining -NotNull  -Array -Comment $Comment
-            $ReferenceFields = $fieldInfo.Where( { $_.IsReference }).Name | Sort-Object
-            # -GetReferenceEntityById, -GetRef
-            $Comment = 'Follow this external ID and return any external objects'            
-            $parameters += Get-AtwsDynamicParameter -Name 'GetReferenceEntityById' -Alias 'GetRef' -SetName 'Filter', 'By_parameters' -Type 'string' -NotNull -ValidateSet $ReferenceFields -Comment $Comment
-            # -GetExternalEntityByThisEntityId, -External
-            $IncomingReferenceEntities = Get-AtwsFieldInfo -Entity $Entity.Name -ReferencingEntity | Sort-Object
-            $Comment = 'Return entities of selected type that are referencing to this entity.'
-            $parameters += Get-AtwsDynamicParameter -Name 'GetExternalEntityByThisEntityId' -Alias 'External' -SetName 'Filter', 'By_parameters' -Type 'string' -NotNull -ValidateSet $IncomingReferenceEntities -Comment $Comment
-            # -All
-            $Comment = 'Return all objects in one query'    
-            $parameters += Get-AtwsDynamicParameter -Name 'All' -SetName 'Get_all' -Type 'switch' -Comment $Comment
-            if ($Entity.HasUserDefinedFields) {
-                # -UserDefinedField
-                $Comment = 'A single user defined field can be used pr query'
-                $parameters += Get-AtwsDynamicParameter -Name 'UserDefinedField' -Alias 'UDF' -SetName 'By_parameters' -Type 'Autotask.UserDefinedField' -NotNull -Comment $Comment
-            }
-        }    
-        elseif ($Verb -eq 'Set') {
-            # -InputObject
-            $Comment = 'An object that will be modified by any parameters and updated in Autotask'
-            $parameters += Get-AtwsDynamicParameter -Name 'InputObject' -SetName 'Input_Object' -Type $TypeName -Mandatory -Pipeline -NotNull -Array -Comment $Comment
-            # -Id
-            $field = $fieldInfo.Where( { $_.Name -eq 'Id' })
-            $Comment = 'The object.ids of objects that should be modified by any parameters and updated in Autotask'
-            $parameters += Get-AtwsDynamicParameter -Name 'Id' -SetName 'By_Id' -Type $field.Type -Mandatory -NotNull -Array -Comment $Comment
-            # -PassThru
-            $Comment = 'Return any updated objects through the pipeline'
-            $parameters += Get-AtwsDynamicParameter -Name 'PassThru' -SetName 'Input_Object', 'By_parameters' -Type 'switch' -Comment $Comment
-            if ($Entity.HasUserDefinedFields) {
-                # -UserDefinedFields
-                $Comment = 'User defined fields already setup i Autotask'
-                $parameters += Get-AtwsDynamicParameter -Name 'UserDefinedFields' -Alias 'UDF' -SetName 'Input_Object', 'By_parameters' -Type 'Autotask.UserDefinedField' -Array -Comment $Comment
-            }
-        }
-        elseif ($Verb -in 'New') {
-            # -InputObject
-            $Comment = 'An array of objects to create'          
-            $parameters += Get-AtwsDynamicParameter -Name 'InputObject' -SetName 'Input_Object' -Type $TypeName -Mandatory -Pipeline -NotNull -Array -Comment $Comment
-            if ($Entity.HasUserDefinedFields) {
-                # -UserDefinedFields
-                $Comment = 'User defined fields already setup i Autotask'
-                $parameters += Get-AtwsDynamicParameter -Name 'UserDefinedFields' -Alias 'UDF' -SetName 'By_parameters' -Type 'Autotask.UserDefinedField' -NotNull -Array -Comment $Comment
-            }
-        }
-        elseif ($Verb -eq 'Remove') {
-            # -InputObject
-            $Comment = 'Any objects that should be deleted'          
-            $parameters += Get-AtwsDynamicParameter -Name 'InputObject' -SetName 'Input_Object' -Type $TypeName -Mandatory -Pipeline -NotNull -Array -Comment $Comment
-            # -Id
-            $field = $fieldInfo.Where( { $_.Name -eq 'Id' })
-            $Comment = 'The unique id of an object to delete'
-            $parameters += Get-AtwsDynamicParameter -Name 'Id' -SetName 'By_parameters' -Type $field.Type -Mandatory  -NotNull -Array -Comment $Comment
-        }
-    
-
+  
         switch ($Verb) {
             'Get' { 
                 [array]$fields = $fieldInfo.Where{ $_.IsQueryable } | ForEach-Object {
@@ -150,27 +89,11 @@ Function Get-AtwsDynamicParameterDefinition {
 
         }
     
-        # Add Name alias for EntityName parameters
-        $entityNameParameter = '{0}Name' -f $Entity.Name
-        foreach ($field in $fields ) {
-            # Start with native field type
-            $Type = $field.Type
-
+        foreach ($field in $fields.where($_.IsPickList) ) {
             # Fieldtype for picklists
-            if ($field.IsPickList) {
-                $Type = 'string'
-                $ValidateLength = 0
-            }
-            else {
-                $ValidateLength = $field.Length
-            }
-
-      
+            $Type = 'string'
+            $ValidateLength = 0
             $Alias = @() 
-            if ($field.Name -eq $entityNameParameter) {
-                $Alias += 'Name'
-            }
-
             $parameterOptions = @{
                 Mandatory              = $Mandatory[$field.Name]
                 ParameterSetName       = $parameterSet[$field.Name]
@@ -182,7 +105,7 @@ Function Get-AtwsDynamicParameterDefinition {
                 Alias                  = $Alias
                 Type                   = $Type
                 Comment                = $field.Label
-                Nullable               = $Verb -ne 'New' -and $Type -ne 'string'
+                Nullable               = $false
             }
 
             $parameters += Get-AtwsDynamicParameter @ParameterOptions

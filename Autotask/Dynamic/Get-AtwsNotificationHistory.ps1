@@ -85,14 +85,272 @@ An example of a more complex query. This command returns any NotificationHistory
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='Filter', ConfirmImpact='None')]
-  Param()
+  Param
+  (
+# A filter that limits the number of objects that is returned from the API
+    [Parameter(
+      Mandatory = $true,
+      ValueFromRemainingArguments = $true,
+      ParametersetName = 'Filter'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [string[]]
+    $Filter,
 
-    dynamicParam {
-      $entityName = 'NotificationHistory'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'Get' -Entity $entity -FieldInfo $fieldInfo
-    }  
+# Follow this external ID and return any external objects
+    [Parameter(
+      ParametersetName = 'Filter'
+    )]
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Alias('GetRef')]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet('AccountID', 'InitiatingContactID', 'InitiatingResourceID', 'OpportunityID', 'ProjectID', 'QuoteID', 'TaskID', 'TicketID', 'TimeEntryID')]
+    [string]
+    $GetReferenceEntityById,
+
+# Return entities of selected type that are referencing to this entity.
+    [Parameter(
+      ParametersetName = 'Filter'
+    )]
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Alias('External')]
+    [ValidateNotNullOrEmpty()]
+    [string]
+    $GetExternalEntityByThisEntityId,
+
+# Return all objects in one query
+    [Parameter(
+      ParametersetName = 'Get_all'
+    )]
+    [switch]
+    $All,
+
+# ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[long][]]
+    $id,
+
+# Notification Sent Time
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[datetime][]]
+    $NotificationSentTime,
+
+# Template Name
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,100)]
+    [string[]]
+    $TemplateName,
+
+# Is Template Deleted
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[boolean][]]
+    $IsDeleted,
+
+# Is Template Active
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[boolean][]]
+    $IsActive,
+
+# Is Template Job
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[boolean][]]
+    $IsTemplateJob,
+
+# Initiating Resource
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[long][]]
+    $InitiatingResourceID,
+
+# Initiating Contact
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[long][]]
+    $InitiatingContactID,
+
+# Recipient Email Address
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,2000)]
+    [string[]]
+    $RecipientEmailAddress,
+
+# Recipient Display Name
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,200)]
+    [string[]]
+    $RecipientDisplayName,
+
+# Client
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[long][]]
+    $AccountID,
+
+# Quote
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[long][]]
+    $QuoteID,
+
+# Opportunity
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[long][]]
+    $OpportunityID,
+
+# Project
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[long][]]
+    $ProjectID,
+
+# Task
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[long][]]
+    $TaskID,
+
+# Ticket
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[long][]]
+    $TicketID,
+
+# Time Entry
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[long][]]
+    $TimeEntryID,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'NotificationSentTime', 'TemplateName', 'IsDeleted', 'IsActive', 'IsTemplateJob', 'InitiatingResourceID', 'InitiatingContactID', 'RecipientEmailAddress', 'RecipientDisplayName', 'AccountID', 'QuoteID', 'OpportunityID', 'ProjectID', 'TaskID', 'TicketID', 'TimeEntryID')]
+    [string[]]
+    $NotEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'NotificationSentTime', 'TemplateName', 'IsDeleted', 'IsActive', 'IsTemplateJob', 'InitiatingResourceID', 'InitiatingContactID', 'RecipientEmailAddress', 'RecipientDisplayName', 'AccountID', 'QuoteID', 'OpportunityID', 'ProjectID', 'TaskID', 'TicketID', 'TimeEntryID')]
+    [string[]]
+    $IsNull,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'NotificationSentTime', 'TemplateName', 'IsDeleted', 'IsActive', 'IsTemplateJob', 'InitiatingResourceID', 'InitiatingContactID', 'RecipientEmailAddress', 'RecipientDisplayName', 'AccountID', 'QuoteID', 'OpportunityID', 'ProjectID', 'TaskID', 'TicketID', 'TimeEntryID')]
+    [string[]]
+    $IsNotNull,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'NotificationSentTime', 'TemplateName', 'InitiatingResourceID', 'InitiatingContactID', 'RecipientEmailAddress', 'RecipientDisplayName', 'AccountID', 'QuoteID', 'OpportunityID', 'ProjectID', 'TaskID', 'TicketID', 'TimeEntryID')]
+    [string[]]
+    $GreaterThan,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'NotificationSentTime', 'TemplateName', 'InitiatingResourceID', 'InitiatingContactID', 'RecipientEmailAddress', 'RecipientDisplayName', 'AccountID', 'QuoteID', 'OpportunityID', 'ProjectID', 'TaskID', 'TicketID', 'TimeEntryID')]
+    [string[]]
+    $GreaterThanOrEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'NotificationSentTime', 'TemplateName', 'InitiatingResourceID', 'InitiatingContactID', 'RecipientEmailAddress', 'RecipientDisplayName', 'AccountID', 'QuoteID', 'OpportunityID', 'ProjectID', 'TaskID', 'TicketID', 'TimeEntryID')]
+    [string[]]
+    $LessThan,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'NotificationSentTime', 'TemplateName', 'InitiatingResourceID', 'InitiatingContactID', 'RecipientEmailAddress', 'RecipientDisplayName', 'AccountID', 'QuoteID', 'OpportunityID', 'ProjectID', 'TaskID', 'TicketID', 'TimeEntryID')]
+    [string[]]
+    $LessThanOrEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('TemplateName', 'RecipientEmailAddress', 'RecipientDisplayName')]
+    [string[]]
+    $Like,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('TemplateName', 'RecipientEmailAddress', 'RecipientDisplayName')]
+    [string[]]
+    $NotLike,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('TemplateName', 'RecipientEmailAddress', 'RecipientDisplayName')]
+    [string[]]
+    $BeginsWith,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('TemplateName', 'RecipientEmailAddress', 'RecipientDisplayName')]
+    [string[]]
+    $EndsWith,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('TemplateName', 'RecipientEmailAddress', 'RecipientDisplayName')]
+    [string[]]
+    $Contains,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('NotificationSentTime')]
+    [string[]]
+    $IsThisDay
+  )
+  dynamicParam {
+    $entity = Get-AtwsFieldInfo -Entity NotificationHistory -EntityInfo
+    $fieldInfo = Get-AtwsFieldInfo -Entity NotificationHistory
+    Get-AtwsDynamicParameterDefinition -Verb 'Get' -Entity $entity -FieldInfo $fieldInfo
+  }
 
     begin { 
         $entityName = 'NotificationHistory'

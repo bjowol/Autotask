@@ -62,14 +62,234 @@ Returns any object with a ContractServiceUnitName that DOES NOT match the simple
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='Filter', ConfirmImpact='None')]
-  Param()
+  Param
+  (
+# A filter that limits the number of objects that is returned from the API
+    [Parameter(
+      Mandatory = $true,
+      ValueFromRemainingArguments = $true,
+      ParametersetName = 'Filter'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [string[]]
+    $Filter,
 
-    dynamicParam {
-      $entityName = 'ContractServiceUnit'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'Get' -Entity $entity -FieldInfo $fieldInfo
-    }  
+# Follow this external ID and return any external objects
+    [Parameter(
+      ParametersetName = 'Filter'
+    )]
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Alias('GetRef')]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet('BusinessDivisionSubdivisionID', 'ContractID', 'ContractServiceID', 'ServiceID', 'VendorAccountID')]
+    [string]
+    $GetReferenceEntityById,
+
+# Return entities of selected type that are referencing to this entity.
+    [Parameter(
+      ParametersetName = 'Filter'
+    )]
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Alias('External')]
+    [ValidateNotNullOrEmpty()]
+    [string]
+    $GetExternalEntityByThisEntityId,
+
+# Return all objects in one query
+    [Parameter(
+      ParametersetName = 'Get_all'
+    )]
+    [switch]
+    $All,
+
+# contract_service_unique_id
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[long][]]
+    $id,
+
+# ContractID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[Int][]]
+    $ContractID,
+
+# ServiceID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[Int][]]
+    $ServiceID,
+
+# StartDate
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[datetime][]]
+    $StartDate,
+
+# EndDate
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[datetime][]]
+    $EndDate,
+
+# Units
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[Int][]]
+    $Units,
+
+# Price
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[float][]]
+    $Price,
+
+# approve_and_post_date
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[datetime][]]
+    $ApproveAndPostDate,
+
+# Period Cost
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[float][]]
+    $Cost,
+
+# Vendor Account ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[Int][]]
+    $VendorAccountID,
+
+# Contract Service Id
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[Int][]]
+    $ContractServiceID,
+
+# InternalCurrencyPrice
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[float][]]
+    $InternalCurrencyPrice,
+
+# Business Division Subdivision ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[Int][]]
+    $BusinessDivisionSubdivisionID,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'ContractID', 'ServiceID', 'StartDate', 'EndDate', 'Units', 'Price', 'ApproveAndPostDate', 'Cost', 'VendorAccountID', 'ContractServiceID', 'InternalCurrencyPrice', 'BusinessDivisionSubdivisionID')]
+    [string[]]
+    $NotEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'ContractID', 'ServiceID', 'StartDate', 'EndDate', 'Units', 'Price', 'ApproveAndPostDate', 'Cost', 'VendorAccountID', 'ContractServiceID', 'InternalCurrencyPrice', 'BusinessDivisionSubdivisionID')]
+    [string[]]
+    $IsNull,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'ContractID', 'ServiceID', 'StartDate', 'EndDate', 'Units', 'Price', 'ApproveAndPostDate', 'Cost', 'VendorAccountID', 'ContractServiceID', 'InternalCurrencyPrice', 'BusinessDivisionSubdivisionID')]
+    [string[]]
+    $IsNotNull,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'ContractID', 'ServiceID', 'StartDate', 'EndDate', 'Units', 'Price', 'ApproveAndPostDate', 'Cost', 'VendorAccountID', 'ContractServiceID', 'InternalCurrencyPrice', 'BusinessDivisionSubdivisionID')]
+    [string[]]
+    $GreaterThan,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'ContractID', 'ServiceID', 'StartDate', 'EndDate', 'Units', 'Price', 'ApproveAndPostDate', 'Cost', 'VendorAccountID', 'ContractServiceID', 'InternalCurrencyPrice', 'BusinessDivisionSubdivisionID')]
+    [string[]]
+    $GreaterThanOrEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'ContractID', 'ServiceID', 'StartDate', 'EndDate', 'Units', 'Price', 'ApproveAndPostDate', 'Cost', 'VendorAccountID', 'ContractServiceID', 'InternalCurrencyPrice', 'BusinessDivisionSubdivisionID')]
+    [string[]]
+    $LessThan,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'ContractID', 'ServiceID', 'StartDate', 'EndDate', 'Units', 'Price', 'ApproveAndPostDate', 'Cost', 'VendorAccountID', 'ContractServiceID', 'InternalCurrencyPrice', 'BusinessDivisionSubdivisionID')]
+    [string[]]
+    $LessThanOrEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [string[]]
+    $Like,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [string[]]
+    $NotLike,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [string[]]
+    $BeginsWith,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [string[]]
+    $EndsWith,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [string[]]
+    $Contains,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('StartDate', 'EndDate', 'ApproveAndPostDate')]
+    [string[]]
+    $IsThisDay
+  )
+
 
     begin { 
         $entityName = 'ContractServiceUnit'

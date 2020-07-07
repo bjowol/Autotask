@@ -53,15 +53,56 @@ Set-AtwsChecklistLibraryChecklistItem
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='By_parameters', ConfirmImpact='Low')]
-  Param()
- 
-    dynamicParam {
-      $entityName = 'ChecklistLibraryChecklistItem'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
-    } 
+  Param
+  (
+# An array of objects to create
+    [Parameter(
+      ParametersetName = 'Input_Object',
+      ValueFromPipeline = $true
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Autotask.ChecklistLibraryChecklistItem[]]
+    $InputObject,
 
+# Name
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [ValidateLength(0,255)]
+    [string]
+    $ItemName,
+
+# Important
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [boolean]
+    $Important,
+
+# Position
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $Position,
+
+# Checklist Library ID
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Int]
+    $ChecklistLibraryID
+  )
+  dynamicParam {
+    $entity = Get-AtwsFieldInfo -Entity ChecklistLibraryChecklistItem -EntityInfo
+    $fieldInfo = Get-AtwsFieldInfo -Entity ChecklistLibraryChecklistItem
+    Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
+  }
+ 
     begin { 
         $entityName = 'ChecklistLibraryChecklistItem'
            

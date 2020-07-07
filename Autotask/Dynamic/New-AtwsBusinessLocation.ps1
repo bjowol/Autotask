@@ -55,15 +55,333 @@ Set-AtwsBusinessLocation
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='By_parameters', ConfirmImpact='Low')]
-  Param()
- 
-    dynamicParam {
-      $entityName = 'BusinessLocation'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
-    } 
+  Param
+  (
+# An array of objects to create
+    [Parameter(
+      ParametersetName = 'Input_Object',
+      ValueFromPipeline = $true
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Autotask.BusinessLocation[]]
+    $InputObject,
 
+# Name
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [ValidateLength(0,100)]
+    [string]
+    $Name,
+
+# Address1
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,100)]
+    [string]
+    $Address1,
+
+# Address2
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,100)]
+    [string]
+    $Address2,
+
+# City
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,50)]
+    [string]
+    $City,
+
+# State
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,25)]
+    [string]
+    $State,
+
+# Postal Code
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,20)]
+    [string]
+    $PostalCode,
+
+# Additional Address Info
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,100)]
+    [string]
+    $AdditionalAddressInfo,
+
+# Country ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $CountryID,
+
+# Holiday Set ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $HolidaySetID,
+
+# No Hours On Holidays
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [boolean]
+    $NoHoursOnHolidays,
+
+# Default
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [boolean]
+    $Default,
+
+# SundayBusinessHoursStartTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $SundayBusinessHoursStartTime,
+
+# SundayBusinessHoursEndTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $SundayBusinessHoursEndTime,
+
+# SundayExtendedHoursStartTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $SundayExtendedHoursStartTime,
+
+# SundayExtendedHoursEndTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $SundayExtendedHoursEndTime,
+
+# MondayBusinessHoursStartTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $MondayBusinessHoursStartTime,
+
+# MondayBusinessHoursEndTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $MondayBusinessHoursEndTime,
+
+# MondayExtendedHoursStartTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $MondayExtendedHoursStartTime,
+
+# MondayExtendedHoursEndTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $MondayExtendedHoursEndTime,
+
+# TuesdayBusinessHoursStartTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $TuesdayBusinessHoursStartTime,
+
+# TuesdayBusinessHoursEndTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $TuesdayBusinessHoursEndTime,
+
+# TuesdayExtendedHoursStartTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $TuesdayExtendedHoursStartTime,
+
+# TuesdayExtendedHoursEndTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $TuesdayExtendedHoursEndTime,
+
+# WednesdayBusinessHoursStartTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $WednesdayBusinessHoursStartTime,
+
+# WednesdayBusinessHoursEndTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $WednesdayBusinessHoursEndTime,
+
+# WednesdayExtendedHoursStartTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $WednesdayExtendedHoursStartTime,
+
+# WednesdayExtendedHoursEndTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $WednesdayExtendedHoursEndTime,
+
+# ThursdayBusinessHoursStartTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $ThursdayBusinessHoursStartTime,
+
+# ThursdayBusinessHoursEndTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $ThursdayBusinessHoursEndTime,
+
+# ThursdayExtendedHoursStartTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $ThursdayExtendedHoursStartTime,
+
+# ThursdayExtendedHoursEndTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $ThursdayExtendedHoursEndTime,
+
+# FridayBusinessHoursStartTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $FridayBusinessHoursStartTime,
+
+# FridayBusinessHoursEndTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $FridayBusinessHoursEndTime,
+
+# FridayExtendedHoursStartTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $FridayExtendedHoursStartTime,
+
+# FridayExtendedHoursEndTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $FridayExtendedHoursEndTime,
+
+# SaturdayBusinessHoursStartTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $SaturdayBusinessHoursStartTime,
+
+# SaturdayBusinessHoursEndTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $SaturdayBusinessHoursEndTime,
+
+# SaturdayExtendedHoursStartTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $SaturdayExtendedHoursStartTime,
+
+# SaturdayExtendedHoursEndTime
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $SaturdayExtendedHoursEndTime,
+
+# Holiday Hours Start Time
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $HolidayHoursStartTime,
+
+# Holiday Hours End Time
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $HolidayHoursEndTime,
+
+# Holiday Extended Hours Start Time
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $HolidayExtendedHoursStartTime,
+
+# Holiday Extended Hours End Time
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $HolidayExtendedHoursEndTime
+  )
+  dynamicParam {
+    $entity = Get-AtwsFieldInfo -Entity BusinessLocation -EntityInfo
+    $fieldInfo = Get-AtwsFieldInfo -Entity BusinessLocation
+    Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
+  }
+ 
     begin { 
         $entityName = 'BusinessLocation'
            

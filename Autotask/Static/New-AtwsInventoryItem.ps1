@@ -55,15 +55,115 @@ Set-AtwsInventoryItem
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='By_parameters', ConfirmImpact='Low')]
-  Param()
- 
-    dynamicParam {
-      $entityName = 'InventoryItem'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
-    } 
+  Param
+  (
+# An array of objects to create
+    [Parameter(
+      ParametersetName = 'Input_Object',
+      ValueFromPipeline = $true
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Autotask.InventoryItem[]]
+    $InputObject,
 
+# Product ID
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Int]
+    $ProductID,
+
+# Inventory Location ID
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Int]
+    $InventoryLocationID,
+
+# Quantity On Hand
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Int]
+    $QuantityOnHand,
+
+# Quantity Minimum
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Int]
+    $QuantityMinimum,
+
+# Quantity Maximum
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Int]
+    $QuantityMaximum,
+
+# Reference Number
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,50)]
+    [string]
+    $ReferenceNumber,
+
+# Bin
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,50)]
+    [string]
+    $Bin,
+
+# On Order
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $OnOrder,
+
+# Back Order
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $BackOrder,
+
+# Reserved
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $Reserved,
+
+# Picked
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $Picked,
+
+# Impersonator Creator Resource ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $ImpersonatorCreatorResourceID
+  )
+
+ 
     begin { 
         $entityName = 'InventoryItem'
            

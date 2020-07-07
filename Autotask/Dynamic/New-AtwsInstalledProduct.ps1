@@ -59,15 +59,542 @@ Set-AtwsInstalledProduct
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='By_parameters', ConfirmImpact='Low')]
-  Param()
- 
-    dynamicParam {
-      $entityName = 'InstalledProduct'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
-    } 
+  Param
+  (
+# An array of objects to create
+    [Parameter(
+      ParametersetName = 'Input_Object',
+      ValueFromPipeline = $true
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Autotask.InstalledProduct[]]
+    $InputObject,
 
+# User defined fields already setup i Autotask
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Alias('UDF')]
+    [ValidateNotNullOrEmpty()]
+    [Autotask.UserDefinedField[]]
+    $UserDefinedFields,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $CreateDate,
+
+# Client
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Int]
+    $AccountID,
+
+# Product Active
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [boolean]
+    $Active,
+
+# Configuration Item Daily Cost
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $DailyCost,
+
+# Configuration Item Hourly Cost
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $HourlyCost,
+
+# Install Date
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $InstallDate,
+
+# Configuration Item Monthly Cost
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $MonthlyCost,
+
+# Configuration Item Notes
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,5000)]
+    [string]
+    $Notes,
+
+# Configuration Item Number of Users
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $NumberOfUsers,
+
+# Configuration Item Per Use Cost
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $PerUseCost,
+
+# Product ID
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Int]
+    $ProductID,
+
+# Reference Number
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,50)]
+    [string]
+    $ReferenceNumber,
+
+# Reference Title
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,200)]
+    [string]
+    $ReferenceTitle,
+
+# Serial Number
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,100)]
+    [string]
+    $SerialNumber,
+
+# Configuration Item Setup Fee
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $SetupFee,
+
+# Warranty Expiration Date
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $WarrantyExpirationDate,
+
+# Contract ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $ContractID,
+
+# Service ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $ServiceID,
+
+# Service Bundle ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $ServiceBundleID,
+
+# Location
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,100)]
+    [string]
+    $Location,
+
+# Contact Name
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $ContactID,
+
+# Vendor Name
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $VendorID,
+
+# Installed By Resource ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $InstalledByID,
+
+# Installed By Contact ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $InstalledByContactID,
+
+# Parent Configuration Item
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $ParentInstalledProductID,
+
+# Last Modified Time
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $LastModifiedTime,
+
+# Contract Service Id
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $ContractServiceID,
+
+# Contract Service Bundle Id
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $ContractServiceBundleID,
+
+# Account Physical Location
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $AccountPhysicalLocationID,
+
+# RMM Device ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [long]
+    $RMMDeviceID,
+
+# RMM Device UID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,255)]
+    [string]
+    $RMMDeviceUID,
+
+# RMM Device Audit External IP Address
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,255)]
+    [string]
+    $RMMDeviceAuditExternalIPAddress,
+
+# RMM Device Audit Hostname
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,255)]
+    [string]
+    $RMMDeviceAuditHostname,
+
+# RMM Device Audit IP Address
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,255)]
+    [string]
+    $RMMDeviceAuditIPAddress,
+
+# RMM Device Audit Mac Address
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,255)]
+    [string]
+    $RMMDeviceAuditMacAddress,
+
+# RMM Device Audit Memory Bytes
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [long]
+    $RMMDeviceAuditMemoryBytes,
+
+# RMM Device Audit Operating System
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,255)]
+    [string]
+    $RMMDeviceAuditOperatingSystem,
+
+# RMM Device Audit Storage Bytes
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [long]
+    $RMMDeviceAuditStorageBytes,
+
+# RMM Device Audit SNMP Location
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,255)]
+    [string]
+    $RMMDeviceAuditSNMPLocation,
+
+# RMM Device Audit SNMP Name
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,255)]
+    [string]
+    $RMMDeviceAuditSNMPName,
+
+# RMM Device Audit SNMP Contact
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,255)]
+    [string]
+    $RMMDeviceAuditSNMPContact,
+
+# RMM Device Audit Mobile Number
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,255)]
+    [string]
+    $RMMDeviceAuditMobileNumber,
+
+# RMM Device Audit Description
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,255)]
+    [string]
+    $RMMDeviceAuditDescription,
+
+# RMM Open Alert Count
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $RMMOpenAlertCount,
+
+# RMM Device Audit Last User
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,50)]
+    [string]
+    $RMMDeviceAuditLastUser,
+
+# RMM Device Audit Missing Patch Count
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $RMMDeviceAuditMissingPatchCount,
+
+# Datto Serial Number
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,100)]
+    [string]
+    $DattoSerialNumber,
+
+# Datto Internal IP
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,255)]
+    [string]
+    $DattoInternalIP,
+
+# Datto Remote IP
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,255)]
+    [string]
+    $DattoRemoteIP,
+
+# Datto Hostname
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,255)]
+    [string]
+    $DattoHostname,
+
+# Datto Protected Kilobytes
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [long]
+    $DattoProtectedKilobytes,
+
+# Datto Used Kilobytes
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [long]
+    $DattoUsedKilobytes,
+
+# Datto Available Kilobytes
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [long]
+    $DattoAvailableKilobytes,
+
+# Datto Percentage Used
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [double]
+    $DattoPercentageUsed,
+
+# Datto Offsite Used Bytes
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [long]
+    $DattoOffsiteUsedBytes,
+
+# Datto NIC Speed Kilobits Per Second
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $DattoNICSpeedKilobitsPerSecond,
+
+# Datto Device Memory Megabytes
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $DattoDeviceMemoryMegabytes,
+
+# Datto Uptime Seconds
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $DattoUptimeSeconds,
+
+# Datto Number Of Agents
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $DattoNumberOfAgents,
+
+# Datto Number Of Drives
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $DattoNumberOfDrives,
+
+# Datto Drives Errors
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [boolean]
+    $DattoDrivesErrors,
+
+# Datto Number Of Volumes
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $DattoNumberOfVolumes,
+
+# Datto Last Check In Date Time
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $DattoLastCheckInDateTime,
+
+# Last Activity Person ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $LastActivityPersonID,
+
+# Created By Person ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $CreatedByPersonID,
+
+# Device Networking ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,100)]
+    [string]
+    $DeviceNetworkingID,
+
+# Installed Product Category ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $InstalledProductCategoryID,
+
+# Source Cost ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $SourceCostID,
+
+# Impersonator Creator Resource ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $ImpersonatorCreatorResourceID
+  )
+  dynamicParam {
+    $entity = Get-AtwsFieldInfo -Entity InstalledProduct -EntityInfo
+    $fieldInfo = Get-AtwsFieldInfo -Entity InstalledProduct
+    Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
+  }
+ 
     begin { 
         $entityName = 'InstalledProduct'
            

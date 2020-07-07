@@ -54,15 +54,134 @@ Set-AtwsUserDefinedFieldDefinition
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='By_parameters', ConfirmImpact='Low')]
-  Param()
- 
-    dynamicParam {
-      $entityName = 'UserDefinedFieldDefinition'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
-    } 
+  Param
+  (
+# An array of objects to create
+    [Parameter(
+      ParametersetName = 'Input_Object',
+      ValueFromPipeline = $true
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Autotask.UserDefinedFieldDefinition[]]
+    $InputObject,
 
+# Name
+    [Parameter(
+      Mandatory = $true,
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [ValidateLength(0,45)]
+    [string]
+    $Name,
+
+# Description
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,128)]
+    [string]
+    $Description,
+
+# Default Value
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,1024)]
+    [string]
+    $DefaultValue,
+
+# Field Mapping
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [boolean]
+    $IsFieldMapping,
+
+# Protected
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [boolean]
+    $IsProtected,
+
+# Required
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [boolean]
+    $IsRequired,
+
+# Active
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [boolean]
+    $IsActive,
+
+# Create Date
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [datetime]
+    $CreateDate,
+
+# Merge Variable Name
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,100)]
+    [string]
+    $MergeVariableName,
+
+# Crm to Project Udf Id
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [long]
+    $CrmToProjectUdfId,
+
+# Sort Order
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $SortOrder,
+
+# Number of Decimal Places
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Int]
+    $NumberOfDecimalPlaces,
+
+# Visible to Client Portal
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [boolean]
+    $IsVisibleToClientPortal,
+
+# Encrypted
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [boolean]
+    $IsEncrypted,
+
+# Is Private
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [boolean]
+    $IsPrivate
+  )
+  dynamicParam {
+    $entity = Get-AtwsFieldInfo -Entity UserDefinedFieldDefinition -EntityInfo
+    $fieldInfo = Get-AtwsFieldInfo -Entity UserDefinedFieldDefinition
+    Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
+  }
+ 
     begin { 
         $entityName = 'UserDefinedFieldDefinition'
            

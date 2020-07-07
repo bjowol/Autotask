@@ -67,14 +67,247 @@ Set-AtwsPurchaseOrderItem
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='Filter', ConfirmImpact='None')]
-  Param()
+  Param
+  (
+# A filter that limits the number of objects that is returned from the API
+    [Parameter(
+      Mandatory = $true,
+      ValueFromRemainingArguments = $true,
+      ParametersetName = 'Filter'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [string[]]
+    $Filter,
 
-    dynamicParam {
-      $entityName = 'PurchaseOrderItem'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'Get' -Entity $entity -FieldInfo $fieldInfo
-    }  
+# Follow this external ID and return any external objects
+    [Parameter(
+      ParametersetName = 'Filter'
+    )]
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Alias('GetRef')]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet('ContractID', 'InventoryLocationID', 'OrderID', 'ProductID', 'ProjectID', 'SalesOrderID', 'TicketID')]
+    [string]
+    $GetReferenceEntityById,
+
+# Return entities of selected type that are referencing to this entity.
+    [Parameter(
+      ParametersetName = 'Filter'
+    )]
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Alias('External')]
+    [ValidateNotNullOrEmpty()]
+    [ValidateSet('PurchaseOrderReceive:PurchaseOrderItemID')]
+    [string]
+    $GetExternalEntityByThisEntityId,
+
+# Return all objects in one query
+    [Parameter(
+      ParametersetName = 'Get_all'
+    )]
+    [switch]
+    $All,
+
+# Inventory Item ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[long][]]
+    $id,
+
+# Inventory Order ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[Int][]]
+    $OrderID,
+
+# Product ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[Int][]]
+    $ProductID,
+
+# Inventory Location ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[Int][]]
+    $InventoryLocationID,
+
+# Quantity Ordered
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[Int][]]
+    $Quantity,
+
+# Memo
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateLength(0,4000)]
+    [string[]]
+    $Memo,
+
+# Product Unit Cost
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateNotNullOrEmpty()]
+    [Nullable[double][]]
+    $UnitCost,
+
+# Sales Order ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[long][]]
+    $SalesOrderID,
+
+# Estimated Arrival Date
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[datetime][]]
+    $EstimatedArrivalDate,
+
+# Cost ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[Int][]]
+    $CostID,
+
+# Contract ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[long][]]
+    $ContractID,
+
+# Project ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[long][]]
+    $ProjectID,
+
+# Ticket ID
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[long][]]
+    $TicketID,
+
+# Internal Currency Product Unit Cost
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [Nullable[double][]]
+    $InternalCurrencyUnitCost,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'OrderID', 'ProductID', 'InventoryLocationID', 'Quantity', 'Memo', 'UnitCost', 'SalesOrderID', 'EstimatedArrivalDate', 'CostID', 'ContractID', 'ProjectID', 'TicketID', 'InternalCurrencyUnitCost')]
+    [string[]]
+    $NotEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'OrderID', 'ProductID', 'InventoryLocationID', 'Quantity', 'Memo', 'UnitCost', 'SalesOrderID', 'EstimatedArrivalDate', 'CostID', 'ContractID', 'ProjectID', 'TicketID', 'InternalCurrencyUnitCost')]
+    [string[]]
+    $IsNull,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'OrderID', 'ProductID', 'InventoryLocationID', 'Quantity', 'Memo', 'UnitCost', 'SalesOrderID', 'EstimatedArrivalDate', 'CostID', 'ContractID', 'ProjectID', 'TicketID', 'InternalCurrencyUnitCost')]
+    [string[]]
+    $IsNotNull,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'OrderID', 'ProductID', 'InventoryLocationID', 'Quantity', 'Memo', 'UnitCost', 'SalesOrderID', 'EstimatedArrivalDate', 'CostID', 'ContractID', 'ProjectID', 'TicketID', 'InternalCurrencyUnitCost')]
+    [string[]]
+    $GreaterThan,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'OrderID', 'ProductID', 'InventoryLocationID', 'Quantity', 'Memo', 'UnitCost', 'SalesOrderID', 'EstimatedArrivalDate', 'CostID', 'ContractID', 'ProjectID', 'TicketID', 'InternalCurrencyUnitCost')]
+    [string[]]
+    $GreaterThanOrEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'OrderID', 'ProductID', 'InventoryLocationID', 'Quantity', 'Memo', 'UnitCost', 'SalesOrderID', 'EstimatedArrivalDate', 'CostID', 'ContractID', 'ProjectID', 'TicketID', 'InternalCurrencyUnitCost')]
+    [string[]]
+    $LessThan,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('id', 'OrderID', 'ProductID', 'InventoryLocationID', 'Quantity', 'Memo', 'UnitCost', 'SalesOrderID', 'EstimatedArrivalDate', 'CostID', 'ContractID', 'ProjectID', 'TicketID', 'InternalCurrencyUnitCost')]
+    [string[]]
+    $LessThanOrEquals,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Memo')]
+    [string[]]
+    $Like,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Memo')]
+    [string[]]
+    $NotLike,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Memo')]
+    [string[]]
+    $BeginsWith,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Memo')]
+    [string[]]
+    $EndsWith,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('Memo')]
+    [string[]]
+    $Contains,
+
+    [Parameter(
+      ParametersetName = 'By_parameters'
+    )]
+    [ValidateSet('EstimatedArrivalDate')]
+    [string[]]
+    $IsThisDay
+  )
+
 
     begin { 
         $entityName = 'PurchaseOrderItem'

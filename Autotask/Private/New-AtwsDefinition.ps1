@@ -1,11 +1,4 @@
-﻿Function New-AtwsDynamicDefinition { 
-    dynamicParam {
-      $entityName = '#EntityName'
-      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
-      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
-      Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
-    } 
-
+﻿Function New-AtwsDefinition { 
     begin { 
         $entityName = '#EntityName'
            
