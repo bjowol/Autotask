@@ -101,7 +101,7 @@ Function Get-AtwsFieldInfo {
     
         # Check if we are connected before trying anything
         if (-not($Script:Atws)) {
-            throw [ApplicationException] 'Not connected to Autotask WebAPI. Re-import module with valid credentials.'
+            throw [ApplicationException] 'Not connected to Autotask WebAPI. Connect with Connect-AtwsWebAPI. For help use "get-help Connect-AtwsWebAPI".'
             return
         }
     
