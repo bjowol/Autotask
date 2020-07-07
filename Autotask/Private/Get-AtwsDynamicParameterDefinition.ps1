@@ -4,7 +4,7 @@
     Copyright (c) ECIT Solutions AS. All rights reserved. Licensed under the MIT license.
     See https://github.com/ecitsolutions/Autotask/blob/master/LICENSE.md for license information.
 #>
-Function Get-AtwsParameterDefinition {
+Function Get-AtwsDynamicParameterDefinition {
     <#
         .SYNOPSIS
             This function returns a complete parameter set for a given entity and verb.

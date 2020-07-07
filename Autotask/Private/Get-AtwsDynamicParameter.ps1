@@ -4,7 +4,7 @@
     Copyright (c) ECIT Solutions AS. All rights reserved. Licensed under the MIT license.
     See https://github.com/ecitsolutions/Autotask/blob/master/LICENSE.md for license information.
 #>
-Function Get-AtwsPSDynamicParameter {
+Function Get-AtwsDynamicParameter {
   <#
         .SYNOPSIS
             This function creates a Powershell dynamic parameter definition as a runtime defined parameter.
@@ -15,7 +15,7 @@ Function Get-AtwsPSDynamicParameter {
         .OUTPUTS
             System.Management.Automation.RuntimeDefinedParameter
         .EXAMPLE
-            Get-AtwsPSParameter -Name 'Filter' -SetName 'Filter' -Type 'string' -Mandatory -Remaining -NotNull  -Array -Comment $Comment
+            Get-AtwsDynamicParameter -Name 'Filter' -SetName 'Filter' -Type 'string' -Mandatory -Remaining -NotNull  -Array -Comment $Comment
         .NOTES
             NAME: Get-AtwsPSDynamicParameter
         .LINK

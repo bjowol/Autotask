@@ -6,7 +6,7 @@ See https://github.com/ecitsolutions/Autotask/blob/master/LICENSE.md for license
 
 #>
 
-Function Get-AtwsFunctionDefinition {
+Function Get-AtwsDynamicFunctionDefinition {
      <#
       .SYNOPSIS
 
@@ -91,11 +91,10 @@ Function Get-AtwsFunctionDefinition {
                 HelpText                = Get-AtwsHelpText -Entity $Entity -verb $verb -FieldInfo $fieldInfo -functionName $functionName
                 DefaultParameterSetName = $defaultParameterSetName 
                 ConfirmImpact           = $confirmImpact
-                Parameters              = Get-AtwsParameterDefinition -Entity $Entity -verb $verb -FieldInfo $fieldInfo
                 Definition              = (Get-Command ('{0}-AtwsDefinition' -F $verb)).Definition -replace '#EntityName', $($Entity.Name)
             }
     
-            $functionDefinition[$functionName] = Convert-AtwsFunctionToText -AtwsFunction $atwsFunction
+            $functionDefinition[$functionName] = Convert-AtwsDynamicFunctionToText -AtwsFunction $atwsFunction
    
         }
     }

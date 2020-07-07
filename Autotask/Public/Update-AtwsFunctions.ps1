@@ -55,13 +55,6 @@ Function Update-AtwsFunctions {
             Activity = 'Creating and importing functions for all static Autotask entities (no picklists).'
             Id       = $ProgressId
         }
-                
-        Write-Verbose -Message ('{0}: Making sure cache is loaded.' -F $MyInvocation.MyCommand.Name)
-    
-        if (-not ($Script:Atws.Cache.Count -gt 0)) {
-            Import-AtwsDiskCache
-        }
-   
     } 
   
     process {
@@ -153,7 +146,7 @@ Function Update-AtwsFunctions {
                     $verboseDescription = '{0}: Creating and Invoking functions for entity {1}' -F $caption, $Entity.Name
                     $verboseWarning = '{0}: About to create and Invoke functions for entity {1}. Do you want to continue?' -F $caption, $Entity.Name
        
-                    $FunctionDefinition = Get-AtwsFunctionDefinition -Entity $Entity -FieldInfo $CacheEntry.Value.FieldInfo
+                    $FunctionDefinition = Get-AtwsDynamicFunctionDefinition -Entity $Entity -FieldInfo $CacheEntry.Value.FieldInfo
         
         
                     foreach ($Function in $FunctionDefinition.GetEnumerator()) {
