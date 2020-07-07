@@ -1,5 +1,5 @@
 #Requires -Version 4.0
-#Version 1.6.6
+#Version 1.6.7
 <#
     .COPYRIGHT
     Copyright (c) ECIT Solutions AS. All rights reserved. Licensed under the MIT license.
@@ -53,51 +53,15 @@ Set-AtwsTicketRmaCredit
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='By_parameters', ConfirmImpact='Low')]
-  Param
-  (
-# An array of objects to create
-    [Parameter(
-      ParametersetName = 'Input_Object',
-      ValueFromPipeline = $true
-    )]
-    [ValidateNotNullOrEmpty()]
-    [Autotask.TicketRmaCredit[]]
-    $InputObject,
-
-# Ticket ID
-    [Parameter(
-      Mandatory = $true,
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [Int]
-    $TicketID,
-
-# Credit Amount
-    [Parameter(
-      Mandatory = $true,
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [decimal]
-    $CreditAmount,
-
-# Internal Currency Credit Amount
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [decimal]
-    $InternalCurrencyCreditAmount,
-
-# Credit Details
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateLength(0,2000)]
-    [string]
-    $CreditDetails
-  )
+  Param()
  
+    dynamicParam {
+      $entityName = 'TicketRmaCredit'
+      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
+      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
+      Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
+    } 
+
     begin { 
         $entityName = 'TicketRmaCredit'
            

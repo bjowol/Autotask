@@ -1,5 +1,5 @@
 #Requires -Version 4.0
-#Version 1.6.6
+#Version 1.6.7
 <#
     .COPYRIGHT
     Copyright (c) ECIT Solutions AS. All rights reserved. Licensed under the MIT license.
@@ -54,53 +54,15 @@ Set-AtwsActionType
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='By_parameters', ConfirmImpact='Low')]
-  Param
-  (
-# An array of objects to create
-    [Parameter(
-      ParametersetName = 'Input_Object',
-      ValueFromPipeline = $true
-    )]
-    [ValidateNotNullOrEmpty()]
-    [Autotask.ActionType[]]
-    $InputObject,
-
-# Name
-    [Parameter(
-      Mandatory = $true,
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [ValidateLength(0,32)]
-    [string]
-    $Name,
-
-# View
-    [Parameter(
-      Mandatory = $true,
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [string]
-    $View,
-
-# Active
-    [Parameter(
-      Mandatory = $true,
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [boolean]
-    $Active,
-
-# System Action Type
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [boolean]
-    $SystemActionType
-  )
+  Param()
  
+    dynamicParam {
+      $entityName = 'ActionType'
+      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
+      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
+      Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
+    } 
+
     begin { 
         $entityName = 'ActionType'
            

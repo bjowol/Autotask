@@ -1,5 +1,5 @@
 #Requires -Version 4.0
-#Version 1.6.6
+#Version 1.6.7
 <#
     .COPYRIGHT
     Copyright (c) ECIT Solutions AS. All rights reserved. Licensed under the MIT license.
@@ -56,118 +56,15 @@ Set-AtwsContractTicketPurchase
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='By_parameters', ConfirmImpact='Low')]
-  Param
-  (
-# An array of objects to create
-    [Parameter(
-      ParametersetName = 'Input_Object',
-      ValueFromPipeline = $true
-    )]
-    [ValidateNotNullOrEmpty()]
-    [Autotask.ContractTicketPurchase[]]
-    $InputObject,
-
-# Contract ID
-    [Parameter(
-      Mandatory = $true,
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [long]
-    $ContractID,
-
-# Paid
-    [Parameter(
-      Mandatory = $true,
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [string]
-    $IsPaid,
-
-# DatePurchased
-    [Parameter(
-      Mandatory = $true,
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [datetime]
-    $DatePurchased,
-
-# Start Date
-    [Parameter(
-      Mandatory = $true,
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [datetime]
-    $StartDate,
-
-# End Date
-    [Parameter(
-      Mandatory = $true,
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [datetime]
-    $EndDate,
-
-# Tickets Purchased
-    [Parameter(
-      Mandatory = $true,
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [double]
-    $TicketsPurchased,
-
-# Rate
-    [Parameter(
-      Mandatory = $true,
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [double]
-    $PerTicketRate,
-
-# Invoice Number
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateLength(0,50)]
-    [string]
-    $InvoiceNumber,
-
-# Payment Number
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateLength(0,50)]
-    [string]
-    $PaymentNumber,
-
-# Payment Type
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [string]
-    $PaymentType,
-
-# Tickets Used
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [double]
-    $TicketsUsed,
-
-# Status
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [string]
-    $Status
-  )
+  Param()
  
+    dynamicParam {
+      $entityName = 'ContractTicketPurchase'
+      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
+      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
+      Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
+    } 
+
     begin { 
         $entityName = 'ContractTicketPurchase'
            

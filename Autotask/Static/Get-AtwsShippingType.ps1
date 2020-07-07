@@ -1,5 +1,5 @@
 #Requires -Version 4.0
-#Version 1.6.6
+#Version 1.6.7
 <#
     .COPYRIGHT
     Copyright (c) ECIT Solutions AS. All rights reserved. Licensed under the MIT license.
@@ -64,179 +64,14 @@ Returns any object with a ShippingTypeName that DOES NOT match the simple patter
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='Filter', ConfirmImpact='None')]
-  Param
-  (
-# A filter that limits the number of objects that is returned from the API
-    [Parameter(
-      Mandatory = $true,
-      ValueFromRemainingArguments = $true,
-      ParametersetName = 'Filter'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [string[]]
-    $Filter,
+  Param()
 
-# Follow this external ID and return any external objects
-    [Parameter(
-      ParametersetName = 'Filter'
-    )]
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [Alias('GetRef')]
-    [ValidateNotNullOrEmpty()]
-    [ValidateSet('AllocationCodeID')]
-    [string]
-    $GetReferenceEntityById,
-
-# Return entities of selected type that are referencing to this entity.
-    [Parameter(
-      ParametersetName = 'Filter'
-    )]
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [Alias('External')]
-    [ValidateNotNullOrEmpty()]
-    [ValidateSet('PurchaseOrder:ShippingType', 'QuoteItem:ShippingID')]
-    [string]
-    $GetExternalEntityByThisEntityId,
-
-# Return all objects in one query
-    [Parameter(
-      ParametersetName = 'Get_all'
-    )]
-    [switch]
-    $All,
-
-# shipping_type_id
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [Nullable[long][]]
-    $id,
-
-# shipping_type_name
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateLength(0,100)]
-    [string[]]
-    $Name,
-
-# active
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [Nullable[boolean][]]
-    $IsActive,
-
-# shipping_type_description
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateLength(0,2000)]
-    [string[]]
-    $Description,
-
-# AllocationCodeID
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [Nullable[Int][]]
-    $AllocationCodeID,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'Name', 'IsActive', 'Description', 'AllocationCodeID')]
-    [string[]]
-    $NotEquals,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'Name', 'IsActive', 'Description', 'AllocationCodeID')]
-    [string[]]
-    $IsNull,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'Name', 'IsActive', 'Description', 'AllocationCodeID')]
-    [string[]]
-    $IsNotNull,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'Name', 'Description', 'AllocationCodeID')]
-    [string[]]
-    $GreaterThan,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'Name', 'Description', 'AllocationCodeID')]
-    [string[]]
-    $GreaterThanOrEquals,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'Name', 'Description', 'AllocationCodeID')]
-    [string[]]
-    $LessThan,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'Name', 'Description', 'AllocationCodeID')]
-    [string[]]
-    $LessThanOrEquals,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('Name', 'Description')]
-    [string[]]
-    $Like,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('Name', 'Description')]
-    [string[]]
-    $NotLike,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('Name', 'Description')]
-    [string[]]
-    $BeginsWith,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('Name', 'Description')]
-    [string[]]
-    $EndsWith,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('Name', 'Description')]
-    [string[]]
-    $Contains,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [string[]]
-    $IsThisDay
-  )
+    dynamicParam {
+      $entityName = 'ShippingType'
+      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
+      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
+      Get-AtwsDynamicParameterDefinition -Verb 'Get' -Entity $entity -FieldInfo $fieldInfo
+    }  
 
     begin { 
         $entityName = 'ShippingType'

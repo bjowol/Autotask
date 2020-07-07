@@ -1,5 +1,5 @@
 #Requires -Version 4.0
-#Version 1.6.6
+#Version 1.6.7
 <#
     .COPYRIGHT
     Copyright (c) ECIT Solutions AS. All rights reserved. Licensed under the MIT license.
@@ -33,27 +33,15 @@ Get-AtwsTicketChangeRequestApproval
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='Input_Object', ConfirmImpact='Low')]
-  Param
-  (
-# Any objects that should be deleted
-    [Parameter(
-      ParametersetName = 'Input_Object',
-      ValueFromPipeline = $true
-    )]
-    [ValidateNotNullOrEmpty()]
-    [Autotask.TicketChangeRequestApproval[]]
-    $InputObject,
-
-# The unique id of an object to delete
-    [Parameter(
-      Mandatory = $true,
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [Int[]]
-    $Id
-  )
+  Param()
  
+    dynamicParam {
+      $entityName = 'TicketChangeRequestApproval'
+      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
+      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
+      Get-AtwsDynamicParameterDefinition -Verb 'Remove' -Entity $entity -FieldInfo $fieldInfo
+    } 
+    
     begin { 
         $entityName = 'TicketChangeRequestApproval'
     

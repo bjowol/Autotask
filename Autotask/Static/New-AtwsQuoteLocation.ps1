@@ -1,5 +1,5 @@
 #Requires -Version 4.0
-#Version 1.6.6
+#Version 1.6.7
 <#
     .COPYRIGHT
     Copyright (c) ECIT Solutions AS. All rights reserved. Licensed under the MIT license.
@@ -51,58 +51,15 @@ Set-AtwsQuoteLocation
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='By_parameters', ConfirmImpact='Low')]
-  Param
-  (
-# An array of objects to create
-    [Parameter(
-      ParametersetName = 'Input_Object',
-      ValueFromPipeline = $true
-    )]
-    [ValidateNotNullOrEmpty()]
-    [Autotask.QuoteLocation[]]
-    $InputObject,
-
-# address_1
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateLength(0,50)]
-    [string]
-    $Address1,
-
-# address_2
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateLength(0,50)]
-    [string]
-    $Address2,
-
-# city
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateLength(0,50)]
-    [string]
-    $City,
-
-# state_province
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateLength(0,50)]
-    [string]
-    $State,
-
-# postal_code
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateLength(0,20)]
-    [string]
-    $PostalCode
-  )
+  Param()
  
+    dynamicParam {
+      $entityName = 'QuoteLocation'
+      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
+      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
+      Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
+    } 
+
     begin { 
         $entityName = 'QuoteLocation'
            

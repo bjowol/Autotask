@@ -1,5 +1,5 @@
 #Requires -Version 4.0
-#Version 1.6.6
+#Version 1.6.7
 <#
     .COPYRIGHT
     Copyright (c) ECIT Solutions AS. All rights reserved. Licensed under the MIT license.
@@ -67,188 +67,14 @@ Set-AtwsQuoteLocation
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='Filter', ConfirmImpact='None')]
-  Param
-  (
-# A filter that limits the number of objects that is returned from the API
-    [Parameter(
-      Mandatory = $true,
-      ValueFromRemainingArguments = $true,
-      ParametersetName = 'Filter'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [string[]]
-    $Filter,
+  Param()
 
-# Follow this external ID and return any external objects
-    [Parameter(
-      ParametersetName = 'Filter'
-    )]
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [Alias('GetRef')]
-    [ValidateNotNullOrEmpty()]
-    [string]
-    $GetReferenceEntityById,
-
-# Return entities of selected type that are referencing to this entity.
-    [Parameter(
-      ParametersetName = 'Filter'
-    )]
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [Alias('External')]
-    [ValidateNotNullOrEmpty()]
-    [ValidateSet('Quote:BillToLocationID', 'Quote:ShipToLocationID', 'Quote:SoldToLocationID')]
-    [string]
-    $GetExternalEntityByThisEntityId,
-
-# Return all objects in one query
-    [Parameter(
-      ParametersetName = 'Get_all'
-    )]
-    [switch]
-    $All,
-
-# location_id
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [Nullable[long][]]
-    $id,
-
-# address_1
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateLength(0,50)]
-    [string[]]
-    $Address1,
-
-# address_2
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateLength(0,50)]
-    [string[]]
-    $Address2,
-
-# city
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateLength(0,50)]
-    [string[]]
-    $City,
-
-# state_province
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateLength(0,50)]
-    [string[]]
-    $State,
-
-# postal_code
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateLength(0,20)]
-    [string[]]
-    $PostalCode,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'Address1', 'Address2', 'City', 'State', 'PostalCode')]
-    [string[]]
-    $NotEquals,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'Address1', 'Address2', 'City', 'State', 'PostalCode')]
-    [string[]]
-    $IsNull,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'Address1', 'Address2', 'City', 'State', 'PostalCode')]
-    [string[]]
-    $IsNotNull,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'Address1', 'Address2', 'City', 'State', 'PostalCode')]
-    [string[]]
-    $GreaterThan,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'Address1', 'Address2', 'City', 'State', 'PostalCode')]
-    [string[]]
-    $GreaterThanOrEquals,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'Address1', 'Address2', 'City', 'State', 'PostalCode')]
-    [string[]]
-    $LessThan,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'Address1', 'Address2', 'City', 'State', 'PostalCode')]
-    [string[]]
-    $LessThanOrEquals,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('Address1', 'Address2', 'City', 'State', 'PostalCode')]
-    [string[]]
-    $Like,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('Address1', 'Address2', 'City', 'State', 'PostalCode')]
-    [string[]]
-    $NotLike,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('Address1', 'Address2', 'City', 'State', 'PostalCode')]
-    [string[]]
-    $BeginsWith,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('Address1', 'Address2', 'City', 'State', 'PostalCode')]
-    [string[]]
-    $EndsWith,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('Address1', 'Address2', 'City', 'State', 'PostalCode')]
-    [string[]]
-    $Contains,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [string[]]
-    $IsThisDay
-  )
+    dynamicParam {
+      $entityName = 'QuoteLocation'
+      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
+      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
+      Get-AtwsDynamicParameterDefinition -Verb 'Get' -Entity $entity -FieldInfo $fieldInfo
+    }  
 
     begin { 
         $entityName = 'QuoteLocation'

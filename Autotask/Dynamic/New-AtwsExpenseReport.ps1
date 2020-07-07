@@ -1,5 +1,5 @@
 #Requires -Version 4.0
-#Version 1.6.6
+#Version 1.6.7
 <#
     .COPYRIGHT
     Copyright (c) ECIT Solutions AS. All rights reserved. Licensed under the MIT license.
@@ -53,154 +53,15 @@ Set-AtwsExpenseReport
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='By_parameters', ConfirmImpact='Low')]
-  Param
-  (
-# An array of objects to create
-    [Parameter(
-      ParametersetName = 'Input_Object',
-      ValueFromPipeline = $true
-    )]
-    [ValidateNotNullOrEmpty()]
-    [Autotask.ExpenseReport[]]
-    $InputObject,
-
-# Name
-    [Parameter(
-      Mandatory = $true,
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [ValidateLength(0,100)]
-    [string]
-    $Name,
-
-# Status
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [string]
-    $Status,
-
-# Submit
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [boolean]
-    $Submit,
-
-# Submit Date
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [datetime]
-    $SubmitDate,
-
-# Submitter ID
-    [Parameter(
-      Mandatory = $true,
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [Int]
-    $SubmitterID,
-
-# Approver ID
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [Int]
-    $ApproverID,
-
-# Period Ending
-    [Parameter(
-      Mandatory = $true,
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [datetime]
-    $WeekEnding,
-
-# Expense Total
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [double]
-    $ExpenseTotal,
-
-# Cash Advance Amount
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [double]
-    $CashAdvanceAmount,
-
-# Rejection Reason
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateLength(0,2048)]
-    [string]
-    $RejectionReason,
-
-# Amount Due
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [double]
-    $AmountDue,
-
-# Department Number
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateLength(0,50)]
-    [string]
-    $DepartmentNumber,
-
-# Quick Books Reference Number
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateLength(0,100)]
-    [string]
-    $QuickBooksReferenceNumber,
-
-# Approved Date
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [datetime]
-    $ApprovedDate,
-
-# Reimbursement Currency ID
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [Int]
-    $ReimbursementCurrencyID,
-
-# Reimbursement Currency Cash Advance Amount
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [double]
-    $ReimbursementCurrencyCashAdvanceAmount,
-
-# Reimbursement Currency Amount Due
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [double]
-    $ReimbursementCurrencyAmountDue,
-
-# Business Division Subdivision ID
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [Int]
-    $BusinessDivisionSubdivisionID
-  )
+  Param()
  
+    dynamicParam {
+      $entityName = 'ExpenseReport'
+      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
+      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
+      Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
+    } 
+
     begin { 
         $entityName = 'ExpenseReport'
            

@@ -1,5 +1,5 @@
 #Requires -Version 4.0
-#Version 1.6.6
+#Version 1.6.7
 <#
     .COPYRIGHT
     Copyright (c) ECIT Solutions AS. All rights reserved. Licensed under the MIT license.
@@ -68,175 +68,14 @@ Set-AtwsInstalledProductBillingProductAssociation
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='Filter', ConfirmImpact='None')]
-  Param
-  (
-# A filter that limits the number of objects that is returned from the API
-    [Parameter(
-      Mandatory = $true,
-      ValueFromRemainingArguments = $true,
-      ParametersetName = 'Filter'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [string[]]
-    $Filter,
+  Param()
 
-# Follow this external ID and return any external objects
-    [Parameter(
-      ParametersetName = 'Filter'
-    )]
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [Alias('GetRef')]
-    [ValidateNotNullOrEmpty()]
-    [ValidateSet('BillingProductID', 'InstalledProductID')]
-    [string]
-    $GetReferenceEntityById,
-
-# Return entities of selected type that are referencing to this entity.
-    [Parameter(
-      ParametersetName = 'Filter'
-    )]
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [Alias('External')]
-    [ValidateNotNullOrEmpty()]
-    [string]
-    $GetExternalEntityByThisEntityId,
-
-# Return all objects in one query
-    [Parameter(
-      ParametersetName = 'Get_all'
-    )]
-    [switch]
-    $All,
-
-# Installed Product Billing Product Association ID
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [Nullable[long][]]
-    $id,
-
-# Installed Product ID
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [Nullable[Int][]]
-    $InstalledProductID,
-
-# Billing Product ID
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [Nullable[Int][]]
-    $BillingProductID,
-
-# Effective Date
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [Nullable[datetime][]]
-    $EffectiveDate,
-
-# Expiration Date
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [Nullable[datetime][]]
-    $ExpirationDate,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'InstalledProductID', 'BillingProductID', 'EffectiveDate', 'ExpirationDate')]
-    [string[]]
-    $NotEquals,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'InstalledProductID', 'BillingProductID', 'EffectiveDate', 'ExpirationDate')]
-    [string[]]
-    $IsNull,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'InstalledProductID', 'BillingProductID', 'EffectiveDate', 'ExpirationDate')]
-    [string[]]
-    $IsNotNull,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'InstalledProductID', 'BillingProductID', 'EffectiveDate', 'ExpirationDate')]
-    [string[]]
-    $GreaterThan,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'InstalledProductID', 'BillingProductID', 'EffectiveDate', 'ExpirationDate')]
-    [string[]]
-    $GreaterThanOrEquals,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'InstalledProductID', 'BillingProductID', 'EffectiveDate', 'ExpirationDate')]
-    [string[]]
-    $LessThan,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'InstalledProductID', 'BillingProductID', 'EffectiveDate', 'ExpirationDate')]
-    [string[]]
-    $LessThanOrEquals,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [string[]]
-    $Like,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [string[]]
-    $NotLike,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [string[]]
-    $BeginsWith,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [string[]]
-    $EndsWith,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [string[]]
-    $Contains,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('EffectiveDate', 'ExpirationDate')]
-    [string[]]
-    $IsThisDay
-  )
+    dynamicParam {
+      $entityName = 'InstalledProductBillingProductAssociation'
+      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
+      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
+      Get-AtwsDynamicParameterDefinition -Verb 'Get' -Entity $entity -FieldInfo $fieldInfo
+    }  
 
     begin { 
         $entityName = 'InstalledProductBillingProductAssociation'

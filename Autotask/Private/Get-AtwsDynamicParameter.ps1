@@ -64,12 +64,13 @@ Function Get-AtwsDynamicParameter {
   
   begin { 
     Write-Debug ('{0}: Begin of function' -F $MyInvocation.MyCommand.Name)
-    $paramProperties = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
 
   }
 
   process { 
     # NB: $Comment is ignored for now
+    $paramProperties = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
+
     foreach ($setName in $parametersetName) { 
 
       $property = New-Object System.Management.Automation.ParameterAttribute
@@ -81,28 +82,29 @@ Function Get-AtwsDynamicParameter {
       $property.ParameterSetName = $setName
       $property.ValueFromRemainingArguments = $valueFromRemainingArguments.IsPresent
       $property.ValueFromPipeline = $valueFromPipeline.IsPresent
-      $paramProperties += $property
+      $paramProperties.Add($property)
     }
     # Add any aliases
     if ($Alias.Count -gt 0) {
-      $paramProperties += New-Object System.Management.Automation.AliasAttribute($Alias)
+      $property = New-Object System.Management.Automation.AliasAttribute($Alias)
+      $paramProperties.Add($property)
     }
     # Add validate not null if present
     if ($ValidateNotNullOrEmpty.IsPresent) {
-      $paramProperties += New-Object System.Management.Automation.ValidateNotNullOrEmptyAttribute($true)
+      $property = New-Object System.Management.Automation.ValidateNotNullOrEmptyAttribute
+      $paramProperties.Add($property)
     }
 
     # Add validate length if present
     if ($ValidateLength -gt 0) {
-      $validateSetProperty = New-Object System.Management.Automation.ValidateLengthAttribute
-      $validateSetProperty.MinLength = 0
-      $validateSetProperty.MaxLength = $ValidateLength
-      $paramProperties += $validateSetProperty
+      $property = New-Object System.Management.Automation.ValidateLengthAttribute(0, $ValidateLength)
+      $paramProperties.Add($property)
     }
-        New-Object System.Management.Automation.ParameterMetadata
+  
     # Add Validateset if present
     if ($ValidateSet.Count -gt 0) { 
-      $paramProperties += New-Object System.Management.Automation.ValidateSetAttribute($ValidateSet)
+      $property = New-Object System.Management.Automation.ValidateSetAttribute($ValidateSet)
+      $paramProperties.Add($property)
     }
 
     # Add the correct variable type for the parameter

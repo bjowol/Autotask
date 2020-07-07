@@ -1,5 +1,5 @@
 #Requires -Version 4.0
-#Version 1.6.6
+#Version 1.6.7
 <#
     .COPYRIGHT
     Copyright (c) ECIT Solutions AS. All rights reserved. Licensed under the MIT license.
@@ -68,182 +68,14 @@ Set-AtwsDepartment
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='Filter', ConfirmImpact='None')]
-  Param
-  (
-# A filter that limits the number of objects that is returned from the API
-    [Parameter(
-      Mandatory = $true,
-      ValueFromRemainingArguments = $true,
-      ParametersetName = 'Filter'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [string[]]
-    $Filter,
+  Param()
 
-# Follow this external ID and return any external objects
-    [Parameter(
-      ParametersetName = 'Filter'
-    )]
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [Alias('GetRef')]
-    [ValidateNotNullOrEmpty()]
-    [ValidateSet('PrimaryLocationID')]
-    [string]
-    $GetReferenceEntityById,
-
-# Return entities of selected type that are referencing to this entity.
-    [Parameter(
-      ParametersetName = 'Filter'
-    )]
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [Alias('External')]
-    [ValidateNotNullOrEmpty()]
-    [ValidateSet('ResourceRole:DepartmentID', 'ResourceRoleDepartment:DepartmentID')]
-    [string]
-    $GetExternalEntityByThisEntityId,
-
-# Return all objects in one query
-    [Parameter(
-      ParametersetName = 'Get_all'
-    )]
-    [switch]
-    $All,
-
-# Department ID
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [Nullable[long][]]
-    $id,
-
-# Name
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [ValidateLength(0,100)]
-    [string[]]
-    $Name,
-
-# Primary Location ID
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [Nullable[Int][]]
-    $PrimaryLocationID,
-
-# Number
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateLength(0,50)]
-    [string[]]
-    $Number,
-
-# Description
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateLength(0,1000)]
-    [string[]]
-    $Description,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'Name', 'PrimaryLocationID', 'Number', 'Description')]
-    [string[]]
-    $NotEquals,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'Name', 'PrimaryLocationID', 'Number', 'Description')]
-    [string[]]
-    $IsNull,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'Name', 'PrimaryLocationID', 'Number', 'Description')]
-    [string[]]
-    $IsNotNull,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'Name', 'PrimaryLocationID', 'Number', 'Description')]
-    [string[]]
-    $GreaterThan,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'Name', 'PrimaryLocationID', 'Number', 'Description')]
-    [string[]]
-    $GreaterThanOrEquals,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'Name', 'PrimaryLocationID', 'Number', 'Description')]
-    [string[]]
-    $LessThan,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'Name', 'PrimaryLocationID', 'Number', 'Description')]
-    [string[]]
-    $LessThanOrEquals,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('Name', 'Number', 'Description')]
-    [string[]]
-    $Like,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('Name', 'Number', 'Description')]
-    [string[]]
-    $NotLike,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('Name', 'Number', 'Description')]
-    [string[]]
-    $BeginsWith,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('Name', 'Number', 'Description')]
-    [string[]]
-    $EndsWith,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('Name', 'Number', 'Description')]
-    [string[]]
-    $Contains,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [string[]]
-    $IsThisDay
-  )
+    dynamicParam {
+      $entityName = 'Department'
+      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
+      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
+      Get-AtwsDynamicParameterDefinition -Verb 'Get' -Entity $entity -FieldInfo $fieldInfo
+    }  
 
     begin { 
         $entityName = 'Department'

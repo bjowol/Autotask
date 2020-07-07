@@ -1,5 +1,5 @@
 #Requires -Version 4.0
-#Version 1.6.6
+#Version 1.6.7
 <#
     .COPYRIGHT
     Copyright (c) ECIT Solutions AS. All rights reserved. Licensed under the MIT license.
@@ -46,76 +46,15 @@ Copies [Autotask.ContractServiceBundleAdjustment] by Id 124 to a new object thro
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='By_parameters', ConfirmImpact='Low')]
-  Param
-  (
-# An array of objects to create
-    [Parameter(
-      ParametersetName = 'Input_Object',
-      ValueFromPipeline = $true
-    )]
-    [ValidateNotNullOrEmpty()]
-    [Autotask.ContractServiceBundleAdjustment[]]
-    $InputObject,
-
-# ContractID
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [Int]
-    $ContractID,
-
-# ServiceBundleID
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [Int]
-    $ServiceBundleID,
-
-# StartDate
-    [Parameter(
-      Mandatory = $true,
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [datetime]
-    $EffectiveDate,
-
-# UnitChange
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [Int]
-    $UnitChange,
-
-# Adjusted Unit Price
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [double]
-    $AdjustedUnitPrice,
-
-# Quote Item Id
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [Int]
-    $QuoteItemID,
-
-# Contract Service Bundle ID
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [Int]
-    $ContractServiceBundleID,
-
-# Allow Repeat Service Bundle
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [boolean]
-    $AllowRepeatServiceBundle
-  )
+  Param()
  
+    dynamicParam {
+      $entityName = 'ContractServiceBundleAdjustment'
+      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
+      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
+      Get-AtwsDynamicParameterDefinition -Verb 'New' -Entity $entity -FieldInfo $fieldInfo
+    } 
+
     begin { 
         $entityName = 'ContractServiceBundleAdjustment'
            

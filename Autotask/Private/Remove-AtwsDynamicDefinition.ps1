@@ -1,52 +1,13 @@
-#Requires -Version 4.0
-#Version 1.6.7
-<#
-    .COPYRIGHT
-    Copyright (c) ECIT Solutions AS. All rights reserved. Licensed under the MIT license.
-    See https://github.com/ecitsolutions/Autotask/blob/master/LICENSE.md for license information.
-#>
-Function Remove-AtwsProjectCost
-{
-
-
-<#
-.SYNOPSIS
-This function deletes a ProjectCost through the Autotask Web Services API.
-.DESCRIPTION
-This function deletes a ProjectCost through the Autotask Web Services API.
-
-Entities that have fields that refer to the base entity of this CmdLet:
-
-BillingItem
-
-.INPUTS
-[Autotask.ProjectCost[]]. This function takes objects as input. Pipeline is supported.
-.OUTPUTS
-Nothing. This fuction just deletes the Autotask.ProjectCost that was passed to the function.
-.EXAMPLE
-Remove-AtwsProjectCost  [-ParameterName] [Parameter value]
-
-.LINK
-New-AtwsProjectCost
- .LINK
-Get-AtwsProjectCost
- .LINK
-Set-AtwsProjectCost
-
-#>
-
-  [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='Input_Object', ConfirmImpact='Low')]
-  Param()
- 
+﻿Function Remove-AtwsDynamicDefinition { 
     dynamicParam {
-      $entityName = 'ProjectCost'
+      $entityName = '#EntityName'
       $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
       $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
       Get-AtwsDynamicParameterDefinition -Verb 'Remove' -Entity $entity -FieldInfo $fieldInfo
     } 
     
     begin { 
-        $entityName = 'ProjectCost'
+        $entityName = '#EntityName'
     
         # Enable modern -Debug behavior
         if ($PSCmdlet.MyInvocation.BoundParameters['Debug'].IsPresent) {
@@ -103,6 +64,5 @@ Set-AtwsProjectCost
     end {
         Write-Debug ('{0}: End of function' -F $MyInvocation.MyCommand.Name)
     }
-
 
 }

@@ -1,5 +1,5 @@
 #Requires -Version 4.0
-#Version 1.6.6
+#Version 1.6.7
 <#
     .COPYRIGHT
     Copyright (c) ECIT Solutions AS. All rights reserved. Licensed under the MIT license.
@@ -81,154 +81,14 @@ Set-AtwsPurchaseApproval
 #>
 
   [CmdLetBinding(SupportsShouldProcess = $true, DefaultParameterSetName='Filter', ConfirmImpact='None')]
-  Param
-  (
-# A filter that limits the number of objects that is returned from the API
-    [Parameter(
-      Mandatory = $true,
-      ValueFromRemainingArguments = $true,
-      ParametersetName = 'Filter'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [string[]]
-    $Filter,
+  Param()
 
-# Follow this external ID and return any external objects
-    [Parameter(
-      ParametersetName = 'Filter'
-    )]
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [Alias('GetRef')]
-    [ValidateNotNullOrEmpty()]
-    [string]
-    $GetReferenceEntityById,
-
-# Return entities of selected type that are referencing to this entity.
-    [Parameter(
-      ParametersetName = 'Filter'
-    )]
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [Alias('External')]
-    [ValidateNotNullOrEmpty()]
-    [string]
-    $GetExternalEntityByThisEntityId,
-
-# Return all objects in one query
-    [Parameter(
-      ParametersetName = 'Get_all'
-    )]
-    [switch]
-    $All,
-
-# Purchase Approval ID
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateNotNullOrEmpty()]
-    [Nullable[long][]]
-    $id,
-
-# Cost Type
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [string[]]
-    $CostType,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'CostType')]
-    [string[]]
-    $NotEquals,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'CostType')]
-    [string[]]
-    $IsNull,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'CostType')]
-    [string[]]
-    $IsNotNull,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'CostType')]
-    [string[]]
-    $GreaterThan,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'CostType')]
-    [string[]]
-    $GreaterThanOrEquals,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'CostType')]
-    [string[]]
-    $LessThan,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('id', 'CostType')]
-    [string[]]
-    $LessThanOrEquals,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('CostType')]
-    [string[]]
-    $Like,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('CostType')]
-    [string[]]
-    $NotLike,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('CostType')]
-    [string[]]
-    $BeginsWith,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('CostType')]
-    [string[]]
-    $EndsWith,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [ValidateSet('CostType')]
-    [string[]]
-    $Contains,
-
-    [Parameter(
-      ParametersetName = 'By_parameters'
-    )]
-    [string[]]
-    $IsThisDay
-  )
+    dynamicParam {
+      $entityName = 'PurchaseApproval'
+      $entity = Get-AtwsFieldInfo -Entity $entityName -EntityInfo
+      $fieldInfo = Get-AtwsFieldInfo -Entity $entityName
+      Get-AtwsDynamicParameterDefinition -Verb 'Get' -Entity $entity -FieldInfo $fieldInfo
+    }  
 
     begin { 
         $entityName = 'PurchaseApproval'

@@ -91,7 +91,7 @@ Function Get-AtwsDynamicFunctionDefinition {
                 HelpText                = Get-AtwsHelpText -Entity $Entity -verb $verb -FieldInfo $fieldInfo -functionName $functionName
                 DefaultParameterSetName = $defaultParameterSetName 
                 ConfirmImpact           = $confirmImpact
-                Definition              = (Get-Command ('{0}-AtwsDefinition' -F $verb)).Definition -replace '#EntityName', $($Entity.Name)
+                Definition              = (Get-Command ('{0}-AtwsDynamicDefinition' -F $verb)).Definition -replace '#EntityName', $($Entity.Name)
             }
     
             $functionDefinition[$functionName] = Convert-AtwsDynamicFunctionToText -AtwsFunction $atwsFunction
