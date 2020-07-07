@@ -166,7 +166,7 @@ Function Connect-AtwsWebAPI {
 
         ## Connect to the API
         #  or die trying
-        . Connect-AtwsWebServices -Configuration $Configuration -Erroraction Stop
+        . Connect-AtwsWebServices -Configuration $ConfigurationData -Erroraction Stop
         
     }
   

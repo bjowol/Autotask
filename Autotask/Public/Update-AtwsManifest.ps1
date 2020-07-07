@@ -146,9 +146,11 @@ Function Update-AtwsManifest {
         $ManifestParams['GUID'] = $GUID
     
         # Information to export
-        <# 
+  
         $Functions = @()
-        $Moduleinfo.ExportedFunctions.Keys | ForEach-Object { $Functions += $_ }#-replace $ModuleInfo.Prefix, '')}
+        $Moduleinfo.ExportedFunctions.Keys | ForEach-Object { $Functions += $_ } #-replace $ModuleInfo.Prefix, '')}
+  
+    <# 
         if ($Beta.IsPresent) {
         # Make sure the beta version does not clobber the release version through 
         # automatic module import
