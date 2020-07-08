@@ -119,7 +119,7 @@ Function Get-AtwsDynamicParameterDefinition {
             
             # Allow multiple values for Get functions
             $type = 'string'
-            if (Get-Verb -eq 'Get') {
+            if ($Verb -eq 'Get') {
                 $type += '[]'
             }
             
