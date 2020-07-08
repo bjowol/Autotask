@@ -157,8 +157,10 @@ if ($PSVersionTable.PSVersion.Major -ge 6) {
 # Compile webserviceinfo (Reference.cs) and instantiate a SOAP client
 Add-Type -TypeDefinition (Get-Content -raw $code) -ReferencedAssemblies $assemblies
 
+# Load the cache from disk
+Initialize-AtwsRamCache
 
-# If they tried to pass any variables
+# See if they tried to pass any variables
 if ($Credential) {
     Write-Verbose ('{0}: Parameters detected. Connecting to Autotask API' -F $MyInvocation.MyCommand.Name)
 

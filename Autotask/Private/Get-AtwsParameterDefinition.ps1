@@ -146,7 +146,7 @@ Function Get-AtwsParameterDefinition {
     
         # Add Name alias for EntityName parameters
         $entityNameParameter = '{0}Name' -f $Entity.Name
-        foreach ($field in $fields ) {
+        foreach ($field in $fields.where(-not($_.IsPickList))) {
             # Start with native field type
             $Type = $field.Type
 

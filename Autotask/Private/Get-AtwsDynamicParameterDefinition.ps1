@@ -55,103 +55,84 @@ Function Get-AtwsDynamicParameterDefinition {
     
         # Add Default PSParameter info to Fields
         foreach ($field in $fieldInfo) {
+            # We need to overwrite this based on verb. No field is required in a Get, for instance.
             $Mandatory[$field.Name] = $field.IsRequired
             $parameterSet[$field.Name] = @('By_parameters')
         }
 
-        # Create the runtime parameter dictionary
-        $parameters = @()
     }
 
     process { 
   
         switch ($Verb) {
             'Get' { 
-                [array]$fields = $fieldInfo.Where{ $_.IsQueryable } | ForEach-Object {
+                [array]$fields = $fieldInfo.Where{ $_.IsQueryable -and $_.IsPickList } | ForEach-Object {
                     $Mandatory[$_.Name] = $false
                     $_
                 }
             }
             'Set' { 
-                [array]$fields = $fieldInfo.Where{ -Not $_.IsReadOnly } | ForEach-Object {
+                [array]$fields = $fieldInfo.Where{ -Not $_.IsReadOnly -and $_.IsPickList } | ForEach-Object {
                     $parameterSet[$_.Name] = @('Input_Object', 'By_parameters', 'By_Id')
                     $_
                 }
             }
             'New' {
-                [array]$fields = $fieldInfo.Where{
-                    $_.Name -ne 'Id'
-                }
+                [array]$fields = $fieldInfo.Where{ $_.Name -ne 'Id' -and $_.IsPickList }
             }
             default {
                 return
             }
 
         }
-    
-        foreach ($field in $fields.where($_.IsPickList) ) {
-            # Fieldtype for picklists
-            $Type = 'string'
-            $ValidateLength = 0
-            $Alias = @() 
-            $parameterOptions = @{
-                Mandatory              = $Mandatory[$field.Name]
-                ParameterSetName       = $parameterSet[$field.Name]
-                ValidateNotNullOrEmpty = $field.IsRequired
-                ValidateLength         = $ValidateLength
-                ValidateSet            = $field.PickListValues | Where-Object { $_.IsActive } | Select-Object -ExpandProperty Label | Sort-Object -Unique
-                Array                  = $(($Verb -eq 'Get'))
-                Name                   = $field.Name
-                Alias                  = $Alias
-                Type                   = $Type
-                Comment                = $field.Label
-                Nullable               = $false
-            }
 
-            $parameters += Get-AtwsDynamicParameter @ParameterOptions
-        }
+        # A container for the runtime parameters
+        $runtimeParameters = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
     
-    
-        # Make modifying operators possible
-        if ($Verb -eq 'Get') {
-            # These operators work for all fields (add quote characters here)
-            [array]$Labels = $fields | Select-Object -ExpandProperty Name
-            if ($Entity.HasUserDefinedFields) { $Labels += 'UserDefinedField' }
-            foreach ($Operator in 'NotEquals', 'IsNull', 'IsNotNull') {
-                $parameters += Get-AtwsDynamicParameter -Name $Operator -SetName 'By_parameters' -Type 'string' -Array -ValidateSet $Labels
-            }
+        foreach ($field in $fields) {
+            # NB: $Comment is ignored for now
 
-            # These operators work for all fields except boolean (add quote characters here)
-            [array]$Labels = $fields | Where-Object { $_.Type -ne 'boolean' } | Select-Object -ExpandProperty Name
-            if ($Entity.HasUserDefinedFields) { $Labels += 'UserDefinedField' }
-            foreach ($Operator in 'GreaterThan', 'GreaterThanOrEquals', 'LessThan', 'LessThanOrEquals') {
-                $parameters += Get-AtwsDynamicParameter -Name $Operator -SetName 'By_parameters' -Type 'string' -Array -ValidateSet $Labels
-            }
+            # A container to hold the parameter attributes
+            $paramProperties = New-Object System.Collections.ObjectModel.Collection[System.Attribute]
+            # Create a [parameter()] clause per parameterset
+            foreach ($setName in $parameterSet[$field.Name]) { 
 
-            # These operators only work for strings (add quote characters here)
-            [array]$Labels = $fields | Where-Object { $_.Type -eq 'string' } | Select-Object -ExpandProperty Name
-            if ($Entity.HasUserDefinedFields) { $Labels += 'UserDefinedField' }
-            foreach ($Operator in 'Like', 'NotLike', 'BeginsWith', 'EndsWith', 'Contains') {
-                $parameters += Get-AtwsDynamicParameter -Name $Operator -SetName 'By_parameters' -Type 'string' -Array -ValidateSet $Labels
+                $property = New-Object System.Management.Automation.ParameterAttribute
+                $property.Mandatory = $Mandatory[$field.Name]
+                $property.ParameterSetName = $setName
+                $property.ValueFromRemainingArguments = $valueFromRemainingArguments.IsPresent
+                $property.ValueFromPipeline = $valueFromPipeline.IsPresent
+                $paramProperties.Add($property)
             }
-      
-            # This operator only work for datetime (add quote characters here)
-            [array]$Labels = $fields | Where-Object { $_.Type -eq 'datetime' } | Select-Object -ExpandProperty Name
-            if ($Entity.HasUserDefinedFields) { $Labels += 'UserDefinedField' }
-            foreach ($Operator in 'IsThisDay') {
-                $parameters += Get-AtwsDynamicParameter -Name $Operator -SetName 'By_parameters' -Type 'string' -Array -ValidateSet $Labels
+            # Add validate not null if field is required
+            if ($field.IsRequired) {
+                $property = New-Object System.Management.Automation.ValidateNotNullOrEmptyAttribute
+                $paramProperties.Add($property)
             }
+        
+            # Add Validateset if present
+            if ($field.PickListValues.Count -gt 0) { 
+                $ValidateSet = $field.PickListValues | Where-Object { $_.IsActive } | Select-Object -ExpandProperty Label | Sort-Object -Unique
+                $property = New-Object System.Management.Automation.ValidateSetAttribute($ValidateSet)
+                $paramProperties.Add($property)
+            }
+            
+            # Allow multiple values for Get functions
+            $type = 'string'
+            if (Get-Verb -eq 'Get') {
+                $type += '[]'
+            }
+            
+            # Create a new parameter with all attributes
+            $parameter = New-Object System.Management.Automation.RuntimeDefinedParameter($field.Name, [system.type]$type, $paramProperties)
+
+            # Add parameter to runtime parameters
+            $runtimeParameters.Add($parameter.Name, $parameter)
         }
     }
 
     end {
-        if($parameters.count -gt 0) { 
-            $runtimeParameters = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
-
-            foreach ($p in $parameters) {
-                $runtimeParameters.Add($p.Name, $p)
-            }
-
+        if ($runtimeParameters.count -gt 0) { 
             return $runtimeParameters
         }
     }
